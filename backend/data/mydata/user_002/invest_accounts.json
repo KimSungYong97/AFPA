@@ -1,0 +1,121 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "3100020001",
+      "is_consent": true,
+      "account_name": "AFPA 종합매매계좌",
+      "account_type": "101",
+      "account_status": "01"
+    }
+  ],
+  "basic_list": [
+    {
+      "account_num": "3100020001",
+      "currency_code": "KRW",
+      "withholdings_amt": 2500000.0,
+      "credit_loan_amt": 0,
+      "mortgage_amt": 0,
+      "issue_date": "20230501"
+    }
+  ],
+  "trans_list": [
+    {
+      "account_num": "3100020001",
+      "trans_dtime": "20260305100000",
+      "trans_no": "I202603012",
+      "trans_type": "01",
+      "trans_type_detail": "ETF매수",
+      "prod_name": "KODEX 200 ETF",
+      "trans_amt": 500000,
+      "settle_amt": 500000,
+      "balance_amt": null,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "3100020001",
+      "trans_dtime": "20260405100000",
+      "trans_no": "I202604012",
+      "trans_type": "01",
+      "trans_type_detail": "ETF매수",
+      "prod_name": "KODEX 200 ETF",
+      "trans_amt": 500000,
+      "settle_amt": 500000,
+      "balance_amt": null,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "3100020001",
+      "trans_dtime": "20260505100000",
+      "trans_no": "I202605012",
+      "trans_type": "01",
+      "trans_type_detail": "ETF매수",
+      "prod_name": "KODEX 200 ETF",
+      "trans_amt": 500000,
+      "settle_amt": 500000,
+      "balance_amt": null,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "3100020001",
+      "trans_dtime": "20260605100000",
+      "trans_no": "I202606012",
+      "trans_type": "01",
+      "trans_type_detail": "ETF매수",
+      "prod_name": "KODEX 200 ETF",
+      "trans_amt": 500000,
+      "settle_amt": 500000,
+      "balance_amt": null,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "3100020001",
+      "trans_dtime": "20260705100000",
+      "trans_no": "I202607012",
+      "trans_type": "01",
+      "trans_type_detail": "ETF매수",
+      "prod_name": "KODEX 200 ETF",
+      "trans_amt": 500000,
+      "settle_amt": 500000,
+      "balance_amt": null,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "3100020001",
+      "trans_dtime": "20260805100000",
+      "trans_no": "I202608012",
+      "trans_type": "01",
+      "trans_type_detail": "ETF매수",
+      "prod_name": "KODEX 200 ETF",
+      "trans_amt": 500000,
+      "settle_amt": 500000,
+      "balance_amt": null,
+      "currency_code": "KRW"
+    }
+  ],
+  "product_list": [
+    {
+      "account_num": "3100020001",
+      "prod_type": "401",
+      "prod_name": "KODEX 200 ETF",
+      "prod_code": "069500",
+      "purchase_amt": 12420000.0,
+      "holding_num": 355,
+      "eval_amt": 13500000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "3100020001",
+      "prod_type": "301",
+      "prod_name": "AFPA 글로벌성장펀드",
+      "prod_code": "K55301",
+      "purchase_amt": 8550000.0,
+      "holding_num": null,
+      "eval_amt": 9000000.0,
+      "currency_code": "KRW"
+    }
+  ]
+}

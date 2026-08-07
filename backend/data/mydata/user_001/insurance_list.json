@@ -1,0 +1,41 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "insu_cnt": 1,
+  "insu_list": [
+    {
+      "insu_num": "INS00101",
+      "is_consent": true,
+      "prod_name": "AFPA 실손의료보험",
+      "insu_type": "01",
+      "insu_status": "02"
+    }
+  ],
+  "basic_list": [
+    {
+      "insu_num": "INS00101",
+      "is_renewable": true,
+      "issue_date": "20230301",
+      "exp_date": "20360804",
+      "face_amt": 30000000,
+      "currency_code": "KRW",
+      "is_variable": false,
+      "is_universal": false
+    }
+  ],
+  "car_list": [],
+  "payment_list": [
+    {
+      "insu_num": "INS00101",
+      "pay_due": "01",
+      "pay_cycle": "1M",
+      "pay_cnt": null,
+      "pay_org_code": "020",
+      "pay_date": "25",
+      "pay_end_date": "20310806",
+      "pay_amt": 220000.0,
+      "currency_code": "KRW"
+    }
+  ]
+}

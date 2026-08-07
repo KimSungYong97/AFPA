@@ -1,0 +1,28 @@
+{
+  "user_id": 1,
+  "name": "김철수",
+  "job": "IT 개발자",
+  "persona_type": "사회초년생",
+  "description": "입사 3년차, 저축 여력 있음. 전세보증금 마련이 목표",
+  "monthly_income": 3200000,
+  "monthly_fixed_expense": 1100000,
+  "monthly_variable_expense": 900000,
+  "goals": [
+    {
+      "name": "전세보증금 마련",
+      "goal_type": "long_term",
+      "target_amount": 50000000,
+      "current_amount": 14000000,
+      "target_date": "2028-12-31",
+      "priority": 1
+    },
+    {
+      "name": "일본 여행",
+      "goal_type": "life_event",
+      "target_amount": 2000000,
+      "current_amount": 500000,
+      "target_date": "2026-12-31",
+      "priority": 2
+    }
+  ]
+}

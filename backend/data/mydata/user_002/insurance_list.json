@@ -1,0 +1,110 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "insu_cnt": 3,
+  "insu_list": [
+    {
+      "insu_num": "INS00201",
+      "is_consent": true,
+      "prod_name": "AFPA 실손의료보험",
+      "insu_type": "01",
+      "insu_status": "02"
+    },
+    {
+      "insu_num": "INS00202",
+      "is_consent": true,
+      "prod_name": "AFPA 자동차보험",
+      "insu_type": "04",
+      "insu_status": "02"
+    },
+    {
+      "insu_num": "INS00203",
+      "is_consent": true,
+      "prod_name": "AFPA 종신보험",
+      "insu_type": "05",
+      "insu_status": "02"
+    }
+  ],
+  "basic_list": [
+    {
+      "insu_num": "INS00201",
+      "is_renewable": true,
+      "issue_date": "20230301",
+      "exp_date": "20360804",
+      "face_amt": 30000000,
+      "currency_code": "KRW",
+      "is_variable": false,
+      "is_universal": false
+    },
+    {
+      "insu_num": "INS00202",
+      "is_renewable": true,
+      "issue_date": "20230301",
+      "exp_date": "20360804",
+      "face_amt": 30000000,
+      "currency_code": "KRW",
+      "is_variable": false,
+      "is_universal": false
+    },
+    {
+      "insu_num": "INS00203",
+      "is_renewable": true,
+      "issue_date": "20230301",
+      "exp_date": "20360804",
+      "face_amt": 100000000,
+      "currency_code": "KRW",
+      "is_variable": false,
+      "is_universal": false
+    }
+  ],
+  "car_list": [
+    {
+      "insu_num": "INS00202",
+      "car_number": "12가2456",
+      "car_insu_type": "01",
+      "car_name": "쏘렌토 하이브리드",
+      "start_date": "20260208",
+      "end_date": "20270208",
+      "contract_age": "만26세이상",
+      "contract_driver": "부부한정",
+      "is_own_dmg_coverage": true,
+      "self_pay_rate": "20%"
+    }
+  ],
+  "payment_list": [
+    {
+      "insu_num": "INS00201",
+      "pay_due": "01",
+      "pay_cycle": "1M",
+      "pay_cnt": null,
+      "pay_org_code": "020",
+      "pay_date": "25",
+      "pay_end_date": "20310806",
+      "pay_amt": 144000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "insu_num": "INS00202",
+      "pay_due": "01",
+      "pay_cycle": "1M",
+      "pay_cnt": null,
+      "pay_org_code": "020",
+      "pay_date": "25",
+      "pay_end_date": "20310806",
+      "pay_amt": 168000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "insu_num": "INS00203",
+      "pay_due": "01",
+      "pay_cycle": "1M",
+      "pay_cnt": null,
+      "pay_org_code": "020",
+      "pay_date": "25",
+      "pay_end_date": "20310806",
+      "pay_amt": 168000.0,
+      "currency_code": "KRW"
+    }
+  ]
+}

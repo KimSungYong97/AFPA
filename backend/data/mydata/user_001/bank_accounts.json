@@ -1,0 +1,102 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_cnt": 3,
+  "account_list": [
+    {
+      "account_num": "1100010001",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "AFPA 자유입출금통장",
+      "account_type": "1001",
+      "account_status": "01",
+      "is_foreign_deposit": false,
+      "is_minus": false
+    },
+    {
+      "account_num": "1100010002",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "AFPA 정기예금",
+      "account_type": "1002",
+      "account_status": "01",
+      "is_foreign_deposit": false,
+      "is_minus": false
+    },
+    {
+      "account_num": "1100010003",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "AFPA 청년적금",
+      "account_type": "1003",
+      "account_status": "01",
+      "is_foreign_deposit": false,
+      "is_minus": false
+    }
+  ],
+  "basic_list": [
+    {
+      "account_num": "1100010001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "prod_name": "AFPA 자유입출금통장",
+      "account_type": "1001",
+      "issue_date": "20230115",
+      "exp_date": null,
+      "commit_amt": null,
+      "monthly_paid_in_amt": null
+    },
+    {
+      "account_num": "1100010002",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "prod_name": "AFPA 정기예금",
+      "account_type": "1002",
+      "issue_date": "20230115",
+      "exp_date": "20270807",
+      "commit_amt": null,
+      "monthly_paid_in_amt": null
+    },
+    {
+      "account_num": "1100010003",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "prod_name": "AFPA 청년적금",
+      "account_type": "1003",
+      "issue_date": "20230115",
+      "exp_date": "20280129",
+      "commit_amt": null,
+      "monthly_paid_in_amt": 500000
+    }
+  ],
+  "detail_list": [
+    {
+      "account_num": "1100010001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "balance_amt": 2800000,
+      "withdrawable_amt": 2800000,
+      "offered_rate": 0.1,
+      "last_paid_in_cnt": null
+    },
+    {
+      "account_num": "1100010002",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "balance_amt": 5000000,
+      "withdrawable_amt": 0,
+      "offered_rate": 3.2,
+      "last_paid_in_cnt": null
+    },
+    {
+      "account_num": "1100010003",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "balance_amt": 6000000,
+      "withdrawable_amt": 0,
+      "offered_rate": 4.5,
+      "last_paid_in_cnt": null
+    }
+  ]
+}

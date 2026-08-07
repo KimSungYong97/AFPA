@@ -1,0 +1,28 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "revolving_cnt": 1,
+  "revolving_list": [
+    {
+      "type": "01",
+      "min_pay_rate": 10.0,
+      "monthly_pay_amt": 200000.0,
+      "remain_amt": 2000000,
+      "agreed_rate": 17.5
+    }
+  ],
+  "short_term_cnt": 1,
+  "short_term_list": [
+    {
+      "loan_dtime": "20260623021222",
+      "loan_amt": 3000000,
+      "remain_amt": 3000000,
+      "int_rate": 18.9,
+      "exp_date": "20260921",
+      "pay_method": "01"
+    }
+  ],
+  "long_term_cnt": 0,
+  "long_term_list": []
+}

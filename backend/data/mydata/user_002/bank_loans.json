@@ -1,0 +1,97 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "loan_cnt": 1,
+  "loan_list": [
+    {
+      "account_num": "2100020001",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "AFPA 전세자금대출",
+      "account_type": "3170",
+      "account_status": "01"
+    }
+  ],
+  "basic_list": [
+    {
+      "account_num": "2100020001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "issue_date": "20240301",
+      "exp_date": "20280806",
+      "last_offered_rate": 3.8,
+      "repay_date": "25",
+      "repay_method": "01",
+      "repay_org_code": "020",
+      "repay_account_num": "1100020001"
+    }
+  ],
+  "detail_list": [
+    {
+      "account_num": "2100020001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "balance_amt": 120000000,
+      "loan_principal": 120000000,
+      "next_repay_date": "20260827"
+    }
+  ],
+  "trans_list": [
+    {
+      "account_num": "2100020001",
+      "trans_dtime": "20260325100000",
+      "trans_no": "L202603012",
+      "trans_type": "02",
+      "trans_amt": 380000.0,
+      "balance_amt": 120000000,
+      "principal_amt": 0,
+      "int_amt": 380000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "2100020001",
+      "trans_dtime": "20260425100000",
+      "trans_no": "L202604012",
+      "trans_type": "02",
+      "trans_amt": 380000.0,
+      "balance_amt": 120000000,
+      "principal_amt": 0,
+      "int_amt": 380000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "2100020001",
+      "trans_dtime": "20260525100000",
+      "trans_no": "L202605012",
+      "trans_type": "02",
+      "trans_amt": 380000.0,
+      "balance_amt": 120000000,
+      "principal_amt": 0,
+      "int_amt": 380000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "2100020001",
+      "trans_dtime": "20260625100000",
+      "trans_no": "L202606012",
+      "trans_type": "02",
+      "trans_amt": 380000.0,
+      "balance_amt": 120000000,
+      "principal_amt": 0,
+      "int_amt": 380000.0,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "2100020001",
+      "trans_dtime": "20260725100000",
+      "trans_no": "L202607012",
+      "trans_type": "02",
+      "trans_amt": 380000.0,
+      "balance_amt": 120000000,
+      "principal_amt": 0,
+      "int_amt": 380000.0,
+      "currency_code": "KRW"
+    }
+  ]
+}

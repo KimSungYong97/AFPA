@@ -1,0 +1,269 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_num": "1100020001",
+  "trans_cnt": 26,
+  "trans_list": [
+    {
+      "trans_dtime": "20260325090000",
+      "trans_no": "T202603250900002",
+      "trans_type": "03",
+      "trans_class": "급여",
+      "trans_amt": 5500000,
+      "balance_amt": 13200000,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA(주) 급여"
+    },
+    {
+      "trans_dtime": "20260325100000",
+      "trans_no": "T202603251000002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1320000.0,
+      "balance_amt": 11880000.0,
+      "currency_code": "KRW",
+      "trans_memo": "월세/관리비 이체"
+    },
+    {
+      "trans_dtime": "20260326140000",
+      "trans_no": "T202603261400002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 240000.0,
+      "balance_amt": 11640000.0,
+      "currency_code": "KRW",
+      "trans_memo": "전기/가스/수도"
+    },
+    {
+      "trans_dtime": "20260314110000",
+      "trans_no": "T202603141100002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1600000,
+      "balance_amt": 10040000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA카드 대금"
+    },
+    {
+      "trans_dtime": "20260301080000",
+      "trans_no": "T202603010800002",
+      "trans_type": "07",
+      "trans_class": "대체",
+      "trans_amt": 1000000,
+      "balance_amt": 9040000.0,
+      "currency_code": "KRW",
+      "trans_memo": "적금 자동이체"
+    },
+    {
+      "trans_dtime": "20260425090000",
+      "trans_no": "T202604250900002",
+      "trans_type": "03",
+      "trans_class": "급여",
+      "trans_amt": 5500000,
+      "balance_amt": 14540000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA(주) 급여"
+    },
+    {
+      "trans_dtime": "20260425100000",
+      "trans_no": "T202604251000002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1320000.0,
+      "balance_amt": 13220000.0,
+      "currency_code": "KRW",
+      "trans_memo": "월세/관리비 이체"
+    },
+    {
+      "trans_dtime": "20260426140000",
+      "trans_no": "T202604261400002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 240000.0,
+      "balance_amt": 12980000.0,
+      "currency_code": "KRW",
+      "trans_memo": "전기/가스/수도"
+    },
+    {
+      "trans_dtime": "20260414110000",
+      "trans_no": "T202604141100002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1600000,
+      "balance_amt": 11380000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA카드 대금"
+    },
+    {
+      "trans_dtime": "20260401080000",
+      "trans_no": "T202604010800002",
+      "trans_type": "07",
+      "trans_class": "대체",
+      "trans_amt": 1000000,
+      "balance_amt": 10380000.0,
+      "currency_code": "KRW",
+      "trans_memo": "적금 자동이체"
+    },
+    {
+      "trans_dtime": "20260525090000",
+      "trans_no": "T202605250900002",
+      "trans_type": "03",
+      "trans_class": "급여",
+      "trans_amt": 5500000,
+      "balance_amt": 15880000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA(주) 급여"
+    },
+    {
+      "trans_dtime": "20260525100000",
+      "trans_no": "T202605251000002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1320000.0,
+      "balance_amt": 14560000.0,
+      "currency_code": "KRW",
+      "trans_memo": "월세/관리비 이체"
+    },
+    {
+      "trans_dtime": "20260526140000",
+      "trans_no": "T202605261400002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 240000.0,
+      "balance_amt": 14320000.0,
+      "currency_code": "KRW",
+      "trans_memo": "전기/가스/수도"
+    },
+    {
+      "trans_dtime": "20260514110000",
+      "trans_no": "T202605141100002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1600000,
+      "balance_amt": 12720000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA카드 대금"
+    },
+    {
+      "trans_dtime": "20260501080000",
+      "trans_no": "T202605010800002",
+      "trans_type": "07",
+      "trans_class": "대체",
+      "trans_amt": 1000000,
+      "balance_amt": 11720000.0,
+      "currency_code": "KRW",
+      "trans_memo": "적금 자동이체"
+    },
+    {
+      "trans_dtime": "20260625090000",
+      "trans_no": "T202606250900002",
+      "trans_type": "03",
+      "trans_class": "급여",
+      "trans_amt": 5500000,
+      "balance_amt": 17220000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA(주) 급여"
+    },
+    {
+      "trans_dtime": "20260625100000",
+      "trans_no": "T202606251000002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1320000.0,
+      "balance_amt": 15900000.0,
+      "currency_code": "KRW",
+      "trans_memo": "월세/관리비 이체"
+    },
+    {
+      "trans_dtime": "20260626140000",
+      "trans_no": "T202606261400002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 240000.0,
+      "balance_amt": 15660000.0,
+      "currency_code": "KRW",
+      "trans_memo": "전기/가스/수도"
+    },
+    {
+      "trans_dtime": "20260614110000",
+      "trans_no": "T202606141100002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1600000,
+      "balance_amt": 14060000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA카드 대금"
+    },
+    {
+      "trans_dtime": "20260601080000",
+      "trans_no": "T202606010800002",
+      "trans_type": "07",
+      "trans_class": "대체",
+      "trans_amt": 1000000,
+      "balance_amt": 13060000.0,
+      "currency_code": "KRW",
+      "trans_memo": "적금 자동이체"
+    },
+    {
+      "trans_dtime": "20260725090000",
+      "trans_no": "T202607250900002",
+      "trans_type": "03",
+      "trans_class": "급여",
+      "trans_amt": 5500000,
+      "balance_amt": 18560000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA(주) 급여"
+    },
+    {
+      "trans_dtime": "20260725100000",
+      "trans_no": "T202607251000002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1320000.0,
+      "balance_amt": 17240000.0,
+      "currency_code": "KRW",
+      "trans_memo": "월세/관리비 이체"
+    },
+    {
+      "trans_dtime": "20260726140000",
+      "trans_no": "T202607261400002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 240000.0,
+      "balance_amt": 17000000.0,
+      "currency_code": "KRW",
+      "trans_memo": "전기/가스/수도"
+    },
+    {
+      "trans_dtime": "20260714110000",
+      "trans_no": "T202607141100002",
+      "trans_type": "04",
+      "trans_class": "출금",
+      "trans_amt": 1600000,
+      "balance_amt": 15400000.0,
+      "currency_code": "KRW",
+      "trans_memo": "AFPA카드 대금"
+    },
+    {
+      "trans_dtime": "20260701080000",
+      "trans_no": "T202607010800002",
+      "trans_type": "07",
+      "trans_class": "대체",
+      "trans_amt": 1000000,
+      "balance_amt": 14400000.0,
+      "currency_code": "KRW",
+      "trans_memo": "적금 자동이체"
+    },
+    {
+      "trans_dtime": "20260801080000",
+      "trans_no": "T202608010800002",
+      "trans_type": "07",
+      "trans_class": "대체",
+      "trans_amt": 1000000,
+      "balance_amt": 13400000.0,
+      "currency_code": "KRW",
+      "trans_memo": "적금 자동이체"
+    }
+  ]
+}

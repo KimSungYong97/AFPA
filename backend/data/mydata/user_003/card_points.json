@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "point_cnt": 1,
+  "point_list": [
+    {
+      "point_name": "AFPA포인트",
+      "remain_point_amt": 10500,
+      "expiring_point_amt": 500,
+      "expiring_date": "20261006"
+    }
+  ]
+}

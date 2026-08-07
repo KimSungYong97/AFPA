@@ -1,0 +1,201 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_id": "PAY003",
+      "is_consent": true,
+      "account_type": "01",
+      "account_status": "01"
+    }
+  ],
+  "balance_list": [
+    {
+      "account_id": "PAY003",
+      "balance_amt": 100000,
+      "charge_amt": 50000,
+      "reserved_amt": 0
+    }
+  ],
+  "trans_cnt": 22,
+  "trans_list": [
+    {
+      "trans_dtime": "20260327110000",
+      "trans_no": "E202603271100003",
+      "trans_type": "01",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": "카페"
+    },
+    {
+      "trans_dtime": "20260307190000",
+      "trans_no": "E202603071900003",
+      "trans_type": "02",
+      "trans_amt": 20000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260312160000",
+      "trans_no": "E202603121600003",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260416150000",
+      "trans_no": "E202604161500003",
+      "trans_type": "01",
+      "trans_amt": 20000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260427190000",
+      "trans_no": "E202604271900003",
+      "trans_type": "01",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260417110000",
+      "trans_no": "E202604171100003",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": "카페"
+    },
+    {
+      "trans_dtime": "20260410140000",
+      "trans_no": "E202604101400003",
+      "trans_type": "01",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260512200000",
+      "trans_no": "E202605122000003",
+      "trans_type": "02",
+      "trans_amt": 30000,
+      "balance_amt": 100000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260528100000",
+      "trans_no": "E202605281000003",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260511150000",
+      "trans_no": "E202605111500003",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260603150000",
+      "trans_no": "E202606031500003",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 100000,
+      "merchant_name": "카페"
+    },
+    {
+      "trans_dtime": "20260609160000",
+      "trans_no": "E202606091600003",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260604120000",
+      "trans_no": "E202606041200003",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260614190000",
+      "trans_no": "E202606141900003",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260713150000",
+      "trans_no": "E202607131500003",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260705170000",
+      "trans_no": "E202607051700003",
+      "trans_type": "01",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260703140000",
+      "trans_no": "E202607031400003",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 100000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260725190000",
+      "trans_no": "E202607251900003",
+      "trans_type": "02",
+      "trans_amt": 20000,
+      "balance_amt": 100000,
+      "merchant_name": "카페"
+    },
+    {
+      "trans_dtime": "20260805190000",
+      "trans_no": "E202608051900003",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": "카페"
+    },
+    {
+      "trans_dtime": "20260803200000",
+      "trans_no": "E202608032000003",
+      "trans_type": "01",
+      "trans_amt": 50000,
+      "balance_amt": 100000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260801100000",
+      "trans_no": "E202608011000003",
+      "trans_type": "02",
+      "trans_amt": 20000,
+      "balance_amt": 100000,
+      "merchant_name": "카페"
+    },
+    {
+      "trans_dtime": "20260807120000",
+      "trans_no": "E202608071200003",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 100000,
+      "merchant_name": null
+    }
+  ]
+}

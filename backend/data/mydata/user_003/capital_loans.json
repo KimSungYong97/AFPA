@@ -1,0 +1,86 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "loan_cnt": 1,
+  "loan_list": [
+    {
+      "account_num": "5100030001",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "AFPA캐피탈 스마트폰 할부",
+      "account_type": "3710",
+      "account_status": "01"
+    }
+  ],
+  "basic_list": [
+    {
+      "account_num": "5100030001",
+      "seqno": "1",
+      "issue_date": "20260409",
+      "exp_date": "20280329",
+      "last_offered_rate": 9.9,
+      "repay_date": "15",
+      "repay_method": "02",
+      "repay_org_code": "020",
+      "repay_account_num": "1100030001"
+    }
+  ],
+  "detail_list": [
+    {
+      "account_num": "5100030001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "balance_amt": 3000000,
+      "loan_principal": 3500000,
+      "next_repay_date": "20260817"
+    }
+  ],
+  "trans_list": [
+    {
+      "account_num": "5100030001",
+      "trans_dtime": "20260315100000",
+      "trans_type": "01",
+      "trans_amt": 180000,
+      "principal_amt": 153000.0,
+      "int_amt": 27000.0,
+      "balance_amt": 3000000
+    },
+    {
+      "account_num": "5100030001",
+      "trans_dtime": "20260415100000",
+      "trans_type": "01",
+      "trans_amt": 180000,
+      "principal_amt": 153000.0,
+      "int_amt": 27000.0,
+      "balance_amt": 3000000
+    },
+    {
+      "account_num": "5100030001",
+      "trans_dtime": "20260515100000",
+      "trans_type": "01",
+      "trans_amt": 180000,
+      "principal_amt": 153000.0,
+      "int_amt": 27000.0,
+      "balance_amt": 3000000
+    },
+    {
+      "account_num": "5100030001",
+      "trans_dtime": "20260615100000",
+      "trans_type": "01",
+      "trans_amt": 180000,
+      "principal_amt": 153000.0,
+      "int_amt": 27000.0,
+      "balance_amt": 3000000
+    },
+    {
+      "account_num": "5100030001",
+      "trans_dtime": "20260715100000",
+      "trans_type": "01",
+      "trans_amt": 180000,
+      "principal_amt": 153000.0,
+      "int_amt": 27000.0,
+      "balance_amt": 3000000
+    }
+  ]
+}

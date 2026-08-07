@@ -1,0 +1,42 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "1100030001",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "AFPA 자유입출금통장",
+      "account_type": "1001",
+      "account_status": "01",
+      "is_foreign_deposit": false,
+      "is_minus": false
+    }
+  ],
+  "basic_list": [
+    {
+      "account_num": "1100030001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "prod_name": "AFPA 자유입출금통장",
+      "account_type": "1001",
+      "issue_date": "20240601",
+      "exp_date": null,
+      "commit_amt": null,
+      "monthly_paid_in_amt": null
+    }
+  ],
+  "detail_list": [
+    {
+      "account_num": "1100030001",
+      "seqno": "1",
+      "currency_code": "KRW",
+      "balance_amt": 1400000,
+      "withdrawable_amt": 1400000,
+      "offered_rate": 0.1,
+      "last_paid_in_cnt": null
+    }
+  ]
+}

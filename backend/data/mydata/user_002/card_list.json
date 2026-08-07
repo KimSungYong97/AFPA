@@ -1,0 +1,30 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "card_cnt": 2,
+  "card_list": [
+    {
+      "card_id": "CARD00201",
+      "card_num": "9410-****-****-0201",
+      "is_consent": true,
+      "card_name": "AFPA 청년카드",
+      "card_member": "1",
+      "card_type": "01",
+      "card_brand": "04",
+      "annual_fee": 15000,
+      "issue_date": "20230201"
+    },
+    {
+      "card_id": "CARD00202",
+      "card_num": "9410-****-****-0202",
+      "is_consent": true,
+      "card_name": "AFPA 트래블카드",
+      "card_member": "1",
+      "card_type": "01",
+      "card_brand": "04",
+      "annual_fee": 15000,
+      "issue_date": "20230201"
+    }
+  ]
+}

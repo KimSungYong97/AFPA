@@ -1,0 +1,121 @@
+[
+  {
+    "id": 1,
+    "name": "김철수",
+    "job": "IT 개발자",
+    "persona_type": "사회초년생",
+    "description": "입사 3년차, 저축 여력 있음. 전세보증금 마련이 목표",
+    "profile": {
+      "monthly_income": 3200000,
+      "monthly_fixed_expense": 1100000,
+      "monthly_variable_expense": 900000,
+      "deposit": 8000000,
+      "savings": 6000000,
+      "investment": 3000000,
+      "other_assets": 0,
+      "total_debt": 0
+    },
+    "goals": [
+      {
+        "name": "전세보증금 마련",
+        "goal_type": "long_term",
+        "target_amount": 50000000,
+        "current_amount": 14000000,
+        "target_date": "2028-12-31",
+        "priority": 1
+      },
+      {
+        "name": "일본 여행",
+        "goal_type": "life_event",
+        "target_amount": 2000000,
+        "current_amount": 500000,
+        "target_date": "2026-12-31",
+        "priority": 2
+      }
+    ],
+    "monthly_spending": 900000,
+    "current_month_factor": 1.0
+  },
+  {
+    "id": 2,
+    "name": "이영희",
+    "job": "간호사",
+    "persona_type": "신혼부부",
+    "description": "부부 합산 소득, 전세대출 1.2억 보유. 내 집 마련이 목표",
+    "profile": {
+      "monthly_income": 5500000,
+      "monthly_fixed_expense": 2400000,
+      "monthly_variable_expense": 1600000,
+      "deposit": 15000000,
+      "savings": 20000000,
+      "investment": 25000000,
+      "other_assets": 5000000,
+      "total_debt": 120000000
+    },
+    "goals": [
+      {
+        "name": "내 집 마련",
+        "goal_type": "long_term",
+        "target_amount": 200000000,
+        "current_amount": 60000000,
+        "target_date": "2031-06-30",
+        "priority": 1
+      },
+      {
+        "name": "차량 구매",
+        "goal_type": "life_event",
+        "target_amount": 35000000,
+        "current_amount": 10000000,
+        "target_date": "2027-06-30",
+        "priority": 2
+      },
+      {
+        "name": "은퇴 자금",
+        "goal_type": "long_term",
+        "target_amount": 500000000,
+        "current_amount": 25000000,
+        "target_date": null,
+        "priority": 3
+      }
+    ],
+    "monthly_spending": 1600000,
+    "current_month_factor": 1.05
+  },
+  {
+    "id": 3,
+    "name": "박과소",
+    "job": "마케터",
+    "persona_type": "과소비형",
+    "description": "소득 대비 지출 과다, 신용대출 보유. 이번 달 소비 급증 (모니터링 테스트용)",
+    "profile": {
+      "monthly_income": 2800000,
+      "monthly_fixed_expense": 1300000,
+      "monthly_variable_expense": 1400000,
+      "deposit": 1500000,
+      "savings": 0,
+      "investment": 500000,
+      "other_assets": 0,
+      "total_debt": 8000000
+    },
+    "goals": [
+      {
+        "name": "노트북 구매",
+        "goal_type": "life_event",
+        "target_amount": 2500000,
+        "current_amount": 200000,
+        "target_date": "2026-10-31",
+        "priority": 1
+      },
+      {
+        "name": "비상금 만들기",
+        "goal_type": "long_term",
+        "target_amount": 10000000,
+        "current_amount": 1500000,
+        "target_date": "2027-12-31",
+        "priority": 2
+      }
+    ],
+    "monthly_spending": 1400000,
+    "current_month_factor": 1.35
+  }
+]

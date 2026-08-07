@@ -1,0 +1,36 @@
+{
+  "user_id": 2,
+  "name": "이영희",
+  "job": "간호사",
+  "persona_type": "신혼부부",
+  "description": "부부 합산 소득, 전세대출 1.2억 보유. 내 집 마련이 목표",
+  "monthly_income": 5500000,
+  "monthly_fixed_expense": 2400000,
+  "monthly_variable_expense": 1600000,
+  "goals": [
+    {
+      "name": "내 집 마련",
+      "goal_type": "long_term",
+      "target_amount": 200000000,
+      "current_amount": 60000000,
+      "target_date": "2031-06-30",
+      "priority": 1
+    },
+    {
+      "name": "차량 구매",
+      "goal_type": "life_event",
+      "target_amount": 35000000,
+      "current_amount": 10000000,
+      "target_date": "2027-06-30",
+      "priority": 2
+    },
+    {
+      "name": "은퇴 자금",
+      "goal_type": "long_term",
+      "target_amount": 500000000,
+      "current_amount": 25000000,
+      "target_date": null,
+      "priority": 3
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+# Web Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# Agent / LLM
+openai>=1.40.0
+langchain>=0.3.0
+langgraph>=0.2.0
+langchain-openai>=0.2.0
+
+# Database
+sqlalchemy>=2.0.0
+alembic>=1.13.0
+# psycopg2-binary  # PostgreSQL 사용 시 주석 해제 (초기엔 SQLite)
+
+# Data
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+pandas>=2.2.0
+python-dateutil>=2.9.0
+
+# HTTP / 외부 정보 수집
+httpx>=0.27.0
+beautifulsoup4>=4.12.0
+
+# Scheduler (모니터링 주기 실행)
+apscheduler>=3.10.0
+
+# Dev
+pytest>=8.0.0
+pytest-asyncio>=0.23.0

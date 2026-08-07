@@ -1,0 +1,43 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "bill_cnt": 5,
+  "bill_list": [
+    {
+      "charge_month": "202603",
+      "charge_day": 14,
+      "charge_amt": 1600000,
+      "card_type": "01",
+      "paid_out_date": "20260314"
+    },
+    {
+      "charge_month": "202604",
+      "charge_day": 14,
+      "charge_amt": 1600000,
+      "card_type": "01",
+      "paid_out_date": "20260414"
+    },
+    {
+      "charge_month": "202605",
+      "charge_day": 14,
+      "charge_amt": 1600000,
+      "card_type": "01",
+      "paid_out_date": "20260514"
+    },
+    {
+      "charge_month": "202606",
+      "charge_day": 14,
+      "charge_amt": 1600000,
+      "card_type": "01",
+      "paid_out_date": "20260614"
+    },
+    {
+      "charge_month": "202607",
+      "charge_day": 14,
+      "charge_amt": 1600000,
+      "card_type": "01",
+      "paid_out_date": "20260714"
+    }
+  ]
+}

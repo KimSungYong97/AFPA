@@ -1,0 +1,68 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "4100020001",
+      "is_consent": true,
+      "account_status": "01",
+      "prod_name": "AFPA IRP 계좌"
+    }
+  ],
+  "basic_list": [
+    {
+      "account_num": "4100020001",
+      "accum_amt": 5000000,
+      "issue_date": "20220301",
+      "open_date": "20220301"
+    }
+  ],
+  "detail_list": [
+    {
+      "account_num": "4100020001",
+      "irp_prod_name": "AFPA IRP 정기예금형",
+      "eval_amt": 5000000,
+      "invest_principal": 4500000.0,
+      "fee_amt": 12000
+    }
+  ],
+  "trans_list": [
+    {
+      "account_num": "4100020001",
+      "trans_dtime": "20260310090000",
+      "trans_type": "01",
+      "trans_amt": 300000,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "4100020001",
+      "trans_dtime": "20260410090000",
+      "trans_type": "01",
+      "trans_amt": 300000,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "4100020001",
+      "trans_dtime": "20260510090000",
+      "trans_type": "01",
+      "trans_amt": 300000,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "4100020001",
+      "trans_dtime": "20260610090000",
+      "trans_type": "01",
+      "trans_amt": 300000,
+      "currency_code": "KRW"
+    },
+    {
+      "account_num": "4100020001",
+      "trans_dtime": "20260710090000",
+      "trans_type": "01",
+      "trans_amt": 300000,
+      "currency_code": "KRW"
+    }
+  ]
+}

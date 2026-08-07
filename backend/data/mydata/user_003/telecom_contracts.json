@@ -1,0 +1,70 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "contract_cnt": 1,
+  "contract_list": [
+    {
+      "contract_id": "TEL00301",
+      "is_consent": true,
+      "contract_type": "01",
+      "contract_status": "01",
+      "plan_name": "5G 스탠다드",
+      "device_installment": 250000
+    }
+  ],
+  "bill_list": [
+    {
+      "charge_month": "202603",
+      "charge_amt": 130000.0
+    },
+    {
+      "charge_month": "202604",
+      "charge_amt": 130000.0
+    },
+    {
+      "charge_month": "202605",
+      "charge_amt": 130000.0
+    },
+    {
+      "charge_month": "202606",
+      "charge_amt": 130000.0
+    },
+    {
+      "charge_month": "202607",
+      "charge_amt": 130000.0
+    }
+  ],
+  "paid_list": [
+    {
+      "paid_dtime": "20260325120000",
+      "paid_amt": 130000.0,
+      "pay_method": "02",
+      "pay_org_code": "020"
+    },
+    {
+      "paid_dtime": "20260425120000",
+      "paid_amt": 130000.0,
+      "pay_method": "02",
+      "pay_org_code": "020"
+    },
+    {
+      "paid_dtime": "20260525120000",
+      "paid_amt": 130000.0,
+      "pay_method": "02",
+      "pay_org_code": "020"
+    },
+    {
+      "paid_dtime": "20260625120000",
+      "paid_amt": 130000.0,
+      "pay_method": "02",
+      "pay_org_code": "020"
+    },
+    {
+      "paid_dtime": "20260725120000",
+      "paid_amt": 130000.0,
+      "pay_method": "02",
+      "pay_org_code": "020"
+    }
+  ]
+}

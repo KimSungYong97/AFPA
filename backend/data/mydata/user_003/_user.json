@@ -1,0 +1,28 @@
+{
+  "user_id": 3,
+  "name": "박과소",
+  "job": "마케터",
+  "persona_type": "과소비형",
+  "description": "소득 대비 지출 과다, 신용대출 보유. 이번 달 소비 급증 (모니터링 테스트용)",
+  "monthly_income": 2800000,
+  "monthly_fixed_expense": 1300000,
+  "monthly_variable_expense": 1400000,
+  "goals": [
+    {
+      "name": "노트북 구매",
+      "goal_type": "life_event",
+      "target_amount": 2500000,
+      "current_amount": 200000,
+      "target_date": "2026-10-31",
+      "priority": 1
+    },
+    {
+      "name": "비상금 만들기",
+      "goal_type": "long_term",
+      "target_amount": 10000000,
+      "current_amount": 1500000,
+      "target_date": "2027-12-31",
+      "priority": 2
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": "20260807021222",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_id": "PAY001",
+      "is_consent": true,
+      "account_type": "01",
+      "account_status": "01"
+    }
+  ],
+  "balance_list": [
+    {
+      "account_id": "PAY001",
+      "balance_amt": 200000,
+      "charge_amt": 50000,
+      "reserved_amt": 0
+    }
+  ],
+  "trans_cnt": 20,
+  "trans_list": [
+    {
+      "trans_dtime": "20260323140000",
+      "trans_no": "E202603231400001",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260305190000",
+      "trans_no": "E202603051900001",
+      "trans_type": "01",
+      "trans_amt": 50000,
+      "balance_amt": 200000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260303180000",
+      "trans_no": "E202603031800001",
+      "trans_type": "01",
+      "trans_amt": 20000,
+      "balance_amt": 200000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260410150000",
+      "trans_no": "E202604101500001",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260425190000",
+      "trans_no": "E202604251900001",
+      "trans_type": "02",
+      "trans_amt": 10000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260422160000",
+      "trans_no": "E202604221600001",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 200000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260504150000",
+      "trans_no": "E202605041500001",
+      "trans_type": "01",
+      "trans_amt": 50000,
+      "balance_amt": 200000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260516180000",
+      "trans_no": "E202605161800001",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260520100000",
+      "trans_no": "E202605201000001",
+      "trans_type": "01",
+      "trans_amt": 10000,
+      "balance_amt": 200000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260525140000",
+      "trans_no": "E202605251400001",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260614120000",
+      "trans_no": "E202606141200001",
+      "trans_type": "01",
+      "trans_amt": 20000,
+      "balance_amt": 200000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260618200000",
+      "trans_no": "E202606182000001",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 200000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260614100000",
+      "trans_no": "E202606141000001",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 200000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260614190000",
+      "trans_no": "E202606141900001",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 200000,
+      "merchant_name": "편의점"
+    },
+    {
+      "trans_dtime": "20260701150000",
+      "trans_no": "E202607011500001",
+      "trans_type": "02",
+      "trans_amt": 20000,
+      "balance_amt": 200000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260712110000",
+      "trans_no": "E202607121100001",
+      "trans_type": "02",
+      "trans_amt": 50000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260719160000",
+      "trans_no": "E202607191600001",
+      "trans_type": "01",
+      "trans_amt": 10000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    },
+    {
+      "trans_dtime": "20260802150000",
+      "trans_no": "E202608021500001",
+      "trans_type": "01",
+      "trans_amt": 20000,
+      "balance_amt": 200000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260805130000",
+      "trans_no": "E202608051300001",
+      "trans_type": "01",
+      "trans_amt": 30000,
+      "balance_amt": 200000,
+      "merchant_name": "온라인쇼핑"
+    },
+    {
+      "trans_dtime": "20260807120000",
+      "trans_no": "E202608071200001",
+      "trans_type": "01",
+      "trans_amt": 20000,
+      "balance_amt": 200000,
+      "merchant_name": null
+    }
+  ]
+}
