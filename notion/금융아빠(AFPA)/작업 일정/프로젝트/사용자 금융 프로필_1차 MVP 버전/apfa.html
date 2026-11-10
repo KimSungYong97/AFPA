@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFPA 목업</title>
+</head>
+<body>
+<div id="afpa-root"></div>
+<script>
+(function(){
+  // 노션 HTML 블록은 정적 <style>/<link>를 제거할 수 있으므로 JS로 주입한다.
+  function injectLink(href){
+    var l=document.createElement('link'); l.rel='stylesheet'; l.href=href;
+    document.head.appendChild(l);
+  }
+  injectLink('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+injectLink('https://fonts.googleapis.com');
+injectLink('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  var style=document.createElement('style');
+  style.textContent = `
+  :root{
+    --ink:#1C2233; --muted:#767E8F; --line:#E9EBF1;
+    --bg:#E5E8EF; --surface:#FFFFFF; --surface2:#F5F6F9;
+    --pine:#0F5D49; --pine-2:#14795F; --pine-tint:#E2EFEA;
+    --amber:#DD942F; --amber-tint:#FAEFDB;
+    --alert:#BE5740; --alert-tint:#F6E6E0;
+    --shadow:0 1px 2px rgba(28,34,51,.04),0 8px 24px rgba(28,34,51,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:transparent}
+  body{
+    font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    display:block;padding:14px 10px 20px;
+  }
+  .wrap{max-width:420px;margin:0 auto}
+  .num{font-family:'Space Grotesk','Pretendard',sans-serif;font-feature-settings:"tnum"}
+  /* header */
+  .head{width:100%;margin-bottom:16px}
+  .head h1{font-size:19px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+  .head .logo{width:22px;height:22px;border-radius:7px;background:var(--pine);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+  .head p{color:var(--muted);font-size:13px;margin-top:5px}
+  .badge{display:inline-block;font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-tint);
+    padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+  /* segmented */
+  .seg{display:flex;gap:4px;background:#DBDEE7;padding:4px;border-radius:12px;margin-top:14px}
+  .seg button{flex:1;border:0;background:transparent;font-family:inherit;font-size:12.5px;font-weight:600;
+    color:var(--muted);padding:8px 4px;border-radius:9px;cursor:pointer;transition:.15s}
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  /* phone */
+  .phone{width:100%;max-width:420px;background:var(--surface);border-radius:30px;box-shadow:var(--shadow);
+    overflow:hidden;border:1px solid #dfe2ea;position:relative}
+  .status{height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+    font-size:12px;font-weight:600;color:var(--ink)}
+  .status .dots{display:flex;gap:4px;align-items:center}
+  .status .dots span{width:5px;height:5px;border-radius:50%;background:var(--ink);opacity:.35}
+  .screen{display:none;padding:6px 18px 20px;min-height:560px}
+  .screen.on{display:block;animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .scr-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:10px 2px 2px}
+  .scr-sub{color:var(--muted);font-size:13px;margin:0 2px 18px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:12px}
+  .card.tint{background:var(--surface2);border-color:transparent}
+  .lbl{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+  /* onboarding */
+  .field{margin-bottom:18px}
+  .field>.lbl{display:block;margin-bottom:9px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1.4px solid var(--line);background:var(--surface);border-radius:11px;padding:10px 14px;
+    font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;transition:.15s;font-family:inherit}
+  .chip:hover{border-color:#cdd2dd}
+  .chip.on{border-color:var(--pine);background:var(--pine-tint);color:var(--pine)}
+  .connect{width:100%;border:0;border-radius:14px;padding:16px;font-family:inherit;font-size:15px;font-weight:700;
+    cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .connect.idle{background:var(--pine);color:#fff}
+  .connect.idle:hover{background:var(--pine-2)}
+  .connect.done{background:var(--pine-tint);color:var(--pine)}
+  .connect.loading{background:#0f5d4980;color:#fff;cursor:default}
+  .sync{font-size:12px;color:var(--muted);text-align:center;margin-top:9px}
+  .cta{width:100%;border:0;border-radius:14px;padding:15px;font-family:inherit;font-size:15px;font-weight:700;
+    background:var(--ink);color:#fff;cursor:pointer;margin-top:4px}
+  /* gauge */
+  .gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:6px 0 2px}
+  .gauge{position:relative;width:190px;height:120px}
+  .gauge .val{position:absolute;left:0;right:0;top:44px;text-align:center}
+  .gauge .val b{font-size:44px;font-weight:700;line-height:1}
+  .gauge .val small{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:3px}
+  .gscale{display:flex;justify-content:space-between;width:190px;font-size:11px;color:var(--muted);font-weight:600;margin-top:-6px}
+  .verdict{background:var(--pine-tint);color:var(--pine);font-size:13px;font-weight:600;
+    padding:9px 14px;border-radius:11px;text-align:center;margin-top:14px}
+  /* metric grid */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .metric{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+  .metric .mt{font-size:12px;color:var(--muted);font-weight:600}
+  .metric .mv{font-size:26px;font-weight:700;margin:6px 0 2px}
+  .metric .mv span{font-size:14px;font-weight:600}
+  .metric .bar{height:5px;border-radius:4px;background:var(--surface2);overflow:hidden;margin-top:8px}
+  .metric .bar i{display:block;height:100%;border-radius:4px}
+  .metric .goal{font-size:11px;color:var(--muted);margin-top:6px;font-weight:500}
+  .ok i{background:var(--pine)} .warn i{background:var(--amber)} .bad i{background:var(--alert)}
+  .tagok{color:var(--pine)} .tagwarn{color:var(--amber)} .tagbad{color:var(--alert)}
+  /* networth */
+  .nw{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  .nw .big{font-size:28px;font-weight:700}
+  .nw .big span{font-size:15px;font-weight:600;color:var(--muted)}
+  .stack{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-bottom:12px}
+  .stack i{height:100%}
+  .legend{display:flex;flex-direction:column;gap:9px}
+  .legend .row{display:flex;align-items:center;font-size:13px}
+  .legend .row .k{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:600;flex:1}
+  .legend .row .k b{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .legend .row .v{font-weight:700}
+  /* ai card */
+  .ai{background:linear-gradient(150deg,#123f34,#0f5d49);color:#fff;border-radius:18px;padding:18px;margin-bottom:12px}
+  .ai .who{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;opacity:.85;margin-bottom:10px}
+  .ai .who .av{width:26px;height:26px;border-radius:8px;background:#ffffff22;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .ai p{font-size:14.5px;line-height:1.55;font-weight:500}
+  .ai p b{color:var(--amber-tint);font-weight:700}
+  .ai .act{margin-top:13px;background:#fff;color:var(--pine);border:0;border-radius:11px;padding:11px 14px;
+    font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;width:100%}
+  /* spending list */
+  .segsm{display:flex;gap:6px;margin-bottom:14px}
+  .segsm button{flex:1;border:1.3px solid var(--line);background:var(--surface);border-radius:10px;padding:9px;
+    font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  .segsm button.on{border-color:var(--ink);color:var(--ink);background:var(--surface2)}
+  .catrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .catrow:last-child{border:0}
+  .catrow .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+  .catrow .mid{flex:1}
+  .catrow .mid .cn{font-size:14px;font-weight:700}
+  .catrow .mid .cb{height:4px;background:var(--surface2);border-radius:3px;margin-top:6px;overflow:hidden}
+  .catrow .mid .cb i{display:block;height:100%;background:var(--pine);border-radius:3px}
+  .catrow .amt{font-weight:700;font-size:14px}
+  .catrow .amt small{display:block;font-size:11px;color:var(--muted);font-weight:600;text-align:right;margin-top:2px}
+  /* uncertain */
+  .unc{border:1.4px dashed var(--amber);background:var(--amber-tint);border-radius:16px;padding:16px;margin-bottom:12px}
+  .unc .top{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--amber);margin-bottom:10px}
+  .unc .mer{font-size:15px;font-weight:700}
+  .unc .meta{font-size:12.5px;color:var(--muted);font-weight:600;margin:3px 0 13px}
+  .unc .pick{display:flex;flex-wrap:wrap;gap:7px}
+  .unc .pick button{border:1.3px solid #e5cfa0;background:#fff;border-radius:10px;padding:8px 12px;
+    font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--ink)}
+  .unc .pick button:hover{border-color:var(--amber);background:var(--amber-tint)}
+  .unc.solved{border-style:solid;border-color:var(--pine);background:var(--pine-tint)}
+  .unc.solved .top{color:var(--pine)}
+  .pipe{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:11px;flex-wrap:wrap}
+  .pipe span{background:var(--surface2);padding:3px 7px;border-radius:6px}
+  .pipe span.hit{background:var(--pine);color:#fff}
+  .pipe i{font-style:normal;opacity:.5}
+  /* goal */
+  .goalcard{background:linear-gradient(155deg,#fbf3e2,#f6e9cf);border:1px solid #eeddba;border-radius:20px;padding:20px;margin-bottom:12px}
+  .goalcard .gname{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .goalcard .gnum{font-size:30px;font-weight:700;margin:14px 0 2px}
+  .goalcard .gnum span{font-size:15px;color:#9a7c3f;font-weight:600}
+  .goalcard .gbar{height:10px;background:#ffffff9c;border-radius:6px;overflow:hidden;margin:12px 0 7px}
+  .goalcard .gbar i{display:block;height:100%;background:var(--amber);border-radius:6px}
+  .goalcard .gmeta{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#9a7c3f}
+  .alloc{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .alloc:last-child{border:0}
+  .alloc .ai2{width:36px;height:36px;border-radius:10px;background:var(--pine-tint);color:var(--pine);
+    display:flex;align-items:center;justify-content:center;font-size:16px}
+  .alloc .at{flex:1;font-size:13.5px;font-weight:600}
+  .alloc .at small{display:block;color:var(--muted);font-size:11.5px;font-weight:500;margin-top:1px}
+  .alloc .av{font-weight:700}
+  /* bottom nav */
+  .nav{display:flex;border-top:1px solid var(--line);background:var(--surface)}
+  .nav button{flex:1;border:0;background:transparent;padding:11px 0 16px;cursor:pointer;font-family:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}
+  .nav button .ni{font-size:19px;line-height:1}
+  .nav button .nl{font-size:10.5px;font-weight:600}
+  .nav button.on{color:var(--pine)}
+  .foot{max-width:420px;width:100%;color:var(--muted);font-size:11.5px;text-align:center;margin-top:18px;line-height:1.6}
+`;
+  document.head.appendChild(style);
+
+  var root=document.getElementById('afpa-root');
+  root.innerHTML = `<div class="wrap">
+  <div class="head">
+    <h1><span class="logo">A</span> AFPA <span class="badge">목업 · 테스트 데이터</span></h1>
+    <p>AI 금융 설계 에이전트 — 온보딩부터 진단·소비분류·목표까지의 화면 흐름</p>
+    <div class="seg" id="seg">
+      <button data-s="onboard" class="on">온보딩</button>
+      <button data-s="dash">대시보드</button>
+      <button data-s="spend">소비 분류</button>
+      <button data-s="goal">목표</button>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="status">
+      <span class="num">9:41</span>
+      <span class="dots"><span></span><span></span><span></span></span>
+    </div>
+
+    <!-- ONBOARDING -->
+    <section class="screen on" id="s-onboard">
+      <div class="scr-title">프로필 설정</div>
+      <p class="scr-sub">맞춤 진단을 위해 기본 정보를 알려주세요. 금융 데이터는 마이데이터로 자동 연동됩니다.</p>
+
+      <div class="field">
+        <span class="lbl">고용 형태</span>
+        <div class="chips" data-single>
+          <button class="chip on">정규직</button>
+          <button class="chip">프리랜서</button>
+          <button class="chip">자영업</button>
+          <button class="chip">무직·기타</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">거주 형태</span>
+        <div class="chips" data-single>
+          <button class="chip">자가</button>
+          <button class="chip on">전세</button>
+          <button class="chip">월세</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">투자 성향</span>
+        <div class="chips" data-single>
+          <button class="chip">안정형</button>
+          <button class="chip on">중립형</button>
+          <button class="chip">공격형</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">금융 데이터 연동</span>
+        <button class="connect idle" id="connectBtn" onclick="doConnect()">
+          <span id="connectTxt">마이데이터 연동하기</span>
+        </button>
+        <div class="sync" id="syncTxt">6개 금융기관 · 은행/카드/증권/보험/페이/통신</div>
+      </div>
+
+      <button class="cta" onclick="go('dash')">진단 시작하기</button>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section class="screen" id="s-dash">
+      <div class="scr-title">금융 건강도</div>
+      <p class="scr-sub">김서연 님 · 최근 동기화 오늘 오전 9:12</p>
+
+      <div class="card">
+        <div class="gauge-wrap">
+          <div class="gauge">
+            <svg viewBox="0 0 190 120" width="190" height="120">
+              <path d="M15 110 A80 80 0 0 1 175 110" fill="none" stroke="#EDEFF3" stroke-width="14" stroke-linecap="round"/>
+              <path id="gaugeArc" d="M15 110 A80 80 0 0 1 175 110" fill="none" stroke="#0F5D49" stroke-width="14" stroke-linecap="round"/>
+            </svg>
+            <div class="val"><b class="num">72</b><small>100점 만점</small></div>
+          </div>
+          <div class="gscale num"><span>0</span><span>100</span></div>
+        </div>
+        <div class="verdict">양호 — 비상금과 저축률만 보강하면 안정권이에요</div>
+      </div>
+
+      <span class="lbl" style="margin:6px 2px 0;display:block">4대 진단 지표</span>
+      <div class="grid2">
+        <div class="metric">
+          <div class="mt">저축 성향</div>
+          <div class="mv tagwarn num">18<span>%</span></div>
+          <div class="bar warn"><i style="width:60%"></i></div>
+          <div class="goal">권장 30% 이상</div>
+        </div>
+        <div class="metric">
+          <div class="mt">부채 상환 DSR</div>
+          <div class="mv tagok num">22<span>%</span></div>
+          <div class="bar ok"><i style="width:55%"></i></div>
+          <div class="goal">기준 40% 이하 ✓</div>
+        </div>
+        <div class="metric">
+          <div class="mt">비상금 충당률</div>
+          <div class="mv tagbad num">65<span>%</span></div>
+          <div class="bar bad"><i style="width:65%"></i></div>
+          <div class="goal">목표 100% (3개월)</div>
+        </div>
+        <div class="metric">
+          <div class="mt">소비 성향</div>
+          <div class="mv tagwarn num">68<span>%</span></div>
+          <div class="bar warn"><i style="width:68%"></i></div>
+          <div class="goal">권장 50~70%</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="lbl" style="margin-bottom:12px">순자산</div>
+        <div class="nw">
+          <div class="big num">3,470<span>만원</span></div>
+          <div style="text-align:right;font-size:12px;font-weight:600;color:var(--muted)">
+            자산 <span class="num" style="color:var(--pine)">4,820</span> · 부채 <span class="num" style="color:var(--alert)">1,350</span>
+          </div>
+        </div>
+        <div class="stack">
+          <i style="width:13%;background:#14795F"></i>
+          <i style="width:37%;background:#0F5D49"></i>
+          <i style="width:40%;background:#8FBFB0"></i>
+          <i style="width:10%;background:#C9E0D8"></i>
+        </div>
+        <div class="legend">
+          <div class="row"><div class="k"><b style="background:#14795F"></b>현금성</div><div class="v num">620만</div></div>
+          <div class="row"><div class="k"><b style="background:#0F5D49"></b>저축성</div><div class="v num">1,800만</div></div>
+          <div class="row"><div class="k"><b style="background:#8FBFB0"></b>투자</div><div class="v num">1,900만</div></div>
+          <div class="row"><div class="k"><b style="background:#C9E0D8"></b>연금</div><div class="v num">500만</div></div>
+        </div>
+      </div>
+
+      <div class="ai">
+        <div class="who"><span class="av">🤖</span> AI 설계사 제안</div>
+        <p>비상금이 목표의 <b>65%</b>예요. 지금은 투자보다 <b>비상금 통장</b>을 먼저 채우는 게 좋아요. 매월 여유자금 <b>82만원</b> 중 40만원을 비상금으로 돌리면 <b>4개월 뒤</b> 100%에 도달해요.</p>
+        <button class="act" onclick="go('goal')">배분 계획 보기 →</button>
+      </div>
+    </section>
+
+    <!-- SPENDING -->
+    <section class="screen" id="s-spend">
+      <div class="scr-title">소비 분류</div>
+      <p class="scr-sub">이번 달 지출 · 마이데이터 5개 채널 합산</p>
+
+      <div class="unc" id="uncBox">
+        <div class="top"><span>⚠︎</span> <span id="uncTopTxt">확인이 필요한 결제예요</span></div>
+        <div class="mer">주식회사 케이엔제이</div>
+        <div class="meta num">8,900원 · 오늘 12:34 · 카드 승인</div>
+        <div class="pick" id="uncPick">
+          <button onclick="solve('식비')">🍚 식비</button>
+          <button onclick="solve('쇼핑')">🛍️ 쇼핑</button>
+          <button onclick="solve('교통')">🚕 교통</button>
+          <button onclick="solve('문화·기타')">🎬 문화·기타</button>
+        </div>
+        <div class="pipe">
+          <span>①코드매칭</span><i>→</i><span>②가맹점명</span><i>→</i><span>③LLM추론</span><i>→</i><span class="hit">④직접 지정</span>
+        </div>
+      </div>
+
+      <div class="segsm">
+        <button class="on" onclick="tab(this,'var')">변동지출</button>
+        <button onclick="tab(this,'fix')">고정지출</button>
+      </div>
+
+      <div class="card" id="varList">
+        <div class="catrow">
+          <div class="ic" style="background:#FBEAE4">🍚</div>
+          <div class="mid"><div class="cn">식비·카페</div><div class="cb"><i style="width:100%"></i></div></div>
+          <div class="amt num">42만<small>42%</small></div>
+        </div>
+        <div class="catrow">
+          <div class="ic" style="background:#E7EEF6">🛍️</div>
+          <div class="mid"><div class="cn">쇼핑·생필품</div><div class="cb"><i style="width:67%"></i></div></div>
+          <div class="amt num">28만<small>28%</small></div>
+        </div>
+        <div class="catrow">
+          <div class="ic" style="background:#FBF0DB">🎬</div>
+          <div class="mid"><div class="cn">문화·기타</div><div class="cb"><i style="width:43%"></i></div></div>
+          <div class="amt num">18만<small>18%</small></div>
+        </div>
+        <div class="catrow">
+          <div class="ic" style="background:#E2EFEA">🚕</div>
+          <div class="mid"><div class="cn">교통·차량</div><div class="cb"><i style="width:29%"></i></div></div>
+          <div class="amt num">12만<small>12%</small></div>
+        </div>
+      </div>
+
+      <div class="card" id="fixList" style="display:none">
+        <div class="catrow">
+          <div class="ic" style="background:#E2EFEA">🏠</div>
+          <div class="mid"><div class="cn">주거 (전세대출 이자)</div></div>
+          <div class="amt num">38만</div>
+        </div>
+        <div class="catrow">
+          <div class="ic" style="background:#E7EEF6">🛡️</div>
+          <div class="mid"><div class="cn">보험료 <small style="color:var(--muted);font-weight:600">· 보험 API 확정</small></div></div>
+          <div class="amt num">14만</div>
+        </div>
+        <div class="catrow">
+          <div class="ic" style="background:#FBF0DB">📱</div>
+          <div class="mid"><div class="cn">통신요금 <small style="color:var(--muted);font-weight:600">· 통신 API 확정</small></div></div>
+          <div class="amt num">6.5만</div>
+        </div>
+        <div class="catrow">
+          <div class="ic" style="background:#FBEAE4">💳</div>
+          <div class="mid"><div class="cn">구독 (OTT·멤버십)</div></div>
+          <div class="amt num">3.2만</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOAL -->
+    <section class="screen" id="s-goal">
+      <div class="scr-title">목표</div>
+      <p class="scr-sub">목표 달성까지 AFPA가 매월 예산을 배분해요</p>
+
+      <div class="goalcard">
+        <div class="gname">🏡 전세 보증금 마련</div>
+        <div class="gnum num">3,470<span> / 10,000만원</span></div>
+        <div class="gbar"><i style="width:35%"></i></div>
+        <div class="gmeta"><span class="num">35% 달성</span><span>예상 도달 2029.03</span></div>
+      </div>
+
+      <div class="card">
+        <div class="lbl" style="margin-bottom:4px">월 여유자금 배분</div>
+        <div class="nw" style="margin:8px 0 4px">
+          <div class="big num">82<span>만원 / 월</span></div>
+        </div>
+        <div class="alloc">
+          <div class="ai2">🛡️</div>
+          <div class="at">비상금 우선 적립<small>충당률 65% → 목표 100%</small></div>
+          <div class="av num">40만</div>
+        </div>
+        <div class="alloc">
+          <div class="ai2">🏡</div>
+          <div class="at">전세 보증금 저축<small>목표 연계 자동이체</small></div>
+          <div class="av num">30만</div>
+        </div>
+        <div class="alloc">
+          <div class="ai2">📈</div>
+          <div class="at">투자 (중립형)<small>ISA·펀드 분산</small></div>
+          <div class="av num">12만</div>
+        </div>
+      </div>
+
+      <div class="ai">
+        <div class="who"><span class="av">🤖</span> AI 설계사 제안</div>
+        <p>목표 속도를 높이려면 <b>식비 42만원</b>이 권장선보다 높아요. 월 <b>8만원</b>만 줄여 저축에 더하면 도달 시점이 <b>5개월</b> 앞당겨져요.</p>
+      </div>
+    </section>
+
+    <!-- BOTTOM NAV -->
+    <div class="nav" id="nav">
+      <button data-s="dash"><span class="ni">◎</span><span class="nl">홈</span></button>
+      <button data-s="spend"><span class="ni">▤</span><span class="nl">소비</span></button>
+      <button data-s="goal"><span class="ni">◆</span><span class="nl">목표</span></button>
+      <button data-s="onboard"><span class="ni">◐</span><span class="nl">설정</span></button>
+    </div>
+  </div>
+
+  <div class="foot">테스트용 목업 — 모든 수치는 예시 데이터입니다.<br>칩·연동 버튼·미분류 확인·탭은 실제로 눌러볼 수 있어요.</div>
+  </div>`;
+
+  // ===== 이하 기존 동작 로직 =====
+  // gauge fill
+  (function(){
+    var arc=document.getElementById('gaugeArc');
+    var len=arc.getTotalLength();
+    arc.style.strokeDasharray=len;
+    arc.style.strokeDashoffset=len*(1-0.72);
+  })();
+
+  // screen switch
+  function go(s){
+    document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('on')});
+    document.getElementById('s-'+s).classList.add('on');
+    document.querySelectorAll('#seg button').forEach(function(b){b.classList.toggle('on',b.dataset.s===s)});
+    document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('on',b.dataset.s===s)});
+  }
+  document.querySelectorAll('#seg button, #nav button').forEach(function(b){
+    b.addEventListener('click',function(){go(b.dataset.s)});
+  });
+
+  // single-select chips
+  document.querySelectorAll('.chips[data-single]').forEach(function(g){
+    g.querySelectorAll('.chip').forEach(function(c){
+      c.addEventListener('click',function(){
+        g.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on')});
+        c.classList.add('on');
+      });
+    });
+  });
+
+  // mydata connect
+  function doConnect(){
+    var btn=document.getElementById('connectBtn'), txt=document.getElementById('connectTxt'),
+        sync=document.getElementById('syncTxt');
+    if(btn.classList.contains('done'))return;
+    btn.className='connect loading'; txt.textContent='연동 중…';
+    setTimeout(function(){
+      btn.className='connect done'; txt.textContent='✓ 6개 기관 연동 완료';
+      sync.textContent='자산·소비·부채 데이터를 불러왔어요';
+    },1100);
+  }
+
+  // spending tabs
+  function tab(el,which){
+    el.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('on')});
+    el.classList.add('on');
+    document.getElementById('varList').style.display = which==='var'?'block':'none';
+    document.getElementById('fixList').style.display = which==='fix'?'block':'none';
+  }
+
+  // uncertain solve
+  function solve(cat){
+    var box=document.getElementById('uncBox');
+    box.classList.add('solved');
+    document.getElementById('uncTopTxt').textContent='"'+cat+'"(으)로 분류했어요 — 다음부터 자동 적용됩니다';
+    document.getElementById('uncPick').style.display='none';
+    box.querySelector('.pipe').style.display='none';
+  }
+
+})();
+</script>
+</body>
+</html>
