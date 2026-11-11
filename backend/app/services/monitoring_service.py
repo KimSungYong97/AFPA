@@ -16,7 +16,9 @@ def detect_spending_changes(db: Session, user_id: int) -> list[MonitoringAlert]:
     - 이번 달 소비(월 진행 일수로 환산한 페이스) vs 직전 3개월 평균 비교
     """
     alerts: list[MonitoringAlert] = []
-    now = datetime.utcnow()
+    # 기준 시각: 해당 사용자의 가장 최근 거래일(가상 데이터는 과거 시점이라 오늘 날짜를 쓰면 비교할 데이터가 없다)
+    latest = db.query(func.max(Transaction.transacted_at)).filter(Transaction.user_id == user_id).scalar()
+    now = latest or datetime.utcnow()
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     three_months_ago = month_start - timedelta(days=90)
 

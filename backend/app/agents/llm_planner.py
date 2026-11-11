@@ -35,6 +35,7 @@ SYSTEM_PROMPT = """당신은 개인 금융 전략을 수립하는 Financial Plan
 3. 예·적금 상품을 추천할 때는 조회된 실제 상품명과 금리를 근거로 제시하세요.
 4. 개별 주식 종목은 추천하지 않습니다. 자산 배분 관점만 제안합니다.
 5. 금액은 구체적인 숫자로 제시하세요.
+6. 간결하게 쓰세요: actions는 최대 4개, 각 항목은 한두 문장, rationale·expected_outcome은 각각 3문장 이내.
 
 최종 응답은 반드시 아래 JSON 형식으로만 출력하세요 (다른 텍스트 없이):
 {
@@ -50,10 +51,53 @@ SYSTEM_PROMPT = """당신은 개인 금융 전략을 수립하는 Financial Plan
 def generate_llm_action_plan(
     db: Session, user_id: int, goal_id: Optional[int] = None
 ) -> ActionPlanOut:
-    """LLM Agent 루프 실행 → ActionPlanOut 반환. 실패 시 예외 발생 (호출부에서 폴백)."""
-    from openai import OpenAI  # 지연 임포트 (미설치 환경 대비)
+    """LLM Agent 실행 → ActionPlanOut 반환. 실패 시 예외 발생 (호출부에서 규칙 기반으로 폴백).
 
-    client = OpenAI(api_key=settings.openai_api_key)
+    1) 서버가 tool-calling을 지원하면 LLM이 도구를 직접 호출한다(tool_calling).
+    2) 지원하지 않으면(예: vLLM을 --enable-auto-tool-choice 없이 실행) 코드가 도구 결과를 먼저 모두 조회해
+       프롬프트에 넣어 주는 방식으로 대신한다(prefetched_context). 계산·조회는 어느 쪽이든 코드가 한다.
+    """
+    try:
+        return _plan_with_tool_calling(db, user_id, goal_id)
+    except Exception as e:  # noqa: BLE001
+        if "tool" not in str(e).lower():
+            raise
+        logger.warning("서버가 tool-calling을 지원하지 않아 사전 조회 방식으로 전환: %s", str(e)[:120])
+        plan = _plan_with_prefetched_context(db, user_id, goal_id)
+        return plan
+
+
+def _plan_with_prefetched_context(db: Session, user_id: int, goal_id: Optional[int]) -> ActionPlanOut:
+    from app.agents.tools import TOOL_REGISTRY
+    from app.llm_client import get_llm_client
+
+    client = get_llm_client(timeout=240, max_retries=0)   # 계획 작성은 응답이 길어 오래 걸릴 수 있다
+    if client is None:
+        raise RuntimeError("LLM이 설정되지 않았습니다 (LLM_BASE_URL 또는 OPENAI_API_KEY)")
+    names = list(TOOL_REGISTRY)
+    context = {name: json.loads(execute_tool(name, db, user_id)) for name in names}
+    user_msg = ("아래는 코드가 미리 조회한 사용자 데이터입니다. 이 데이터만 근거로 금융 전략을 수립해 주세요."
+                + (f" 특히 goal_id={goal_id} 목표를 중심으로 분석해 주세요." if goal_id else "")
+                + "\n\n" + json.dumps(context, ensure_ascii=False, default=str))
+    response = client.chat.completions.create(
+        model=settings.llm_model, temperature=0.2, max_tokens=900,
+        messages=[{"role": "system", "content": SYSTEM_PROMPT.replace("반드시 도구를 호출해 실제 데이터를 확인한 후 판단하세요. 추측하지 마세요.",
+                                                                    "제공된 데이터만 근거로 판단하고 추측하지 마세요.")},
+                  {"role": "user", "content": user_msg}],
+        extra_body={"chat_template_kwargs": {"enable_thinking": False}},
+    )
+    plan = _parse_plan(response.choices[0].message.content or "", goal_id)
+    plan.llm_tools_used = names
+    plan.llm_mode = "prefetched_context"
+    return plan
+
+
+def _plan_with_tool_calling(db: Session, user_id: int, goal_id: Optional[int] = None) -> ActionPlanOut:
+    from app.llm_client import get_llm_client
+
+    client = get_llm_client(timeout=240, max_retries=0)   # 계획 작성은 응답이 길어 오래 걸릴 수 있다
+    if client is None:
+        raise RuntimeError("LLM이 설정되지 않았습니다 (LLM_BASE_URL 또는 OPENAI_API_KEY)")
 
     user_msg = f"user_id={user_id} 사용자의 금융 전략을 수립해주세요."
     if goal_id:
@@ -64,6 +108,7 @@ def generate_llm_action_plan(
         {"role": "user", "content": user_msg},
     ]
 
+    tools_used: list[str] = []
     for _ in range(MAX_TOOL_ITERATIONS):
         response = client.chat.completions.create(
             model=settings.llm_model,
@@ -78,6 +123,7 @@ def generate_llm_action_plan(
             messages.append(msg.model_dump(exclude_none=True))
             for tc in msg.tool_calls:
                 logger.info("LLM tool call: %s", tc.function.name)
+                tools_used.append(tc.function.name)
                 result = execute_tool(tc.function.name, db, user_id)
                 messages.append({
                     "role": "tool",
@@ -87,7 +133,10 @@ def generate_llm_action_plan(
             continue
 
         # 최종 응답 → JSON 파싱
-        return _parse_plan(msg.content or "", goal_id)
+        plan = _parse_plan(msg.content or "", goal_id)
+        plan.llm_tools_used = tools_used
+        plan.llm_mode = "tool_calling"
+        return plan
 
     raise RuntimeError("LLM Agent가 최대 반복 횟수 내에 계획을 완성하지 못했습니다.")
 
@@ -95,11 +144,14 @@ def generate_llm_action_plan(
 def _parse_plan(content: str, goal_id: Optional[int]) -> ActionPlanOut:
     """LLM 응답(JSON)을 ActionPlanOut으로 변환"""
     # 코드블록 감싸짐 대응
-    text = content.strip()
+    import re
+    text = re.sub(r"<think>.*?</think>", "", content, flags=re.S).strip()
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
+    if not text.lstrip().startswith("{") and "{" in text:      # JSON 앞뒤에 설명이 붙은 경우
+        text = text[text.index("{"): text.rindex("}") + 1]
 
     data = json.loads(text)
     return ActionPlanOut(

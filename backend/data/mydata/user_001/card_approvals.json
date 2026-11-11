@@ -325,14 +325,15 @@
       "approved_dtime": "20260304195600",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "투썸플레이스",
+      "merchant_name": "리틀포레스트 베이커",
       "merchant_regno": "581400001",
       "approved_amt": 34200.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "카페/간식"
+      "_category": "카페/간식",
+      "_original_name": "투썸플레이스"
     },
     {
       "card_id": "CARD00101",
@@ -554,14 +555,15 @@
       "approved_dtime": "20260411093700",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "이마트 성수점",
+      "merchant_name": "주식회사 케이엔제이",
       "merchant_regno": "581200001",
       "approved_amt": 65100.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "이마트 성수점"
     },
     {
       "card_id": "CARD00101",
@@ -584,14 +586,15 @@
       "approved_dtime": "20260402140400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "배달의민족",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200001",
       "approved_amt": 57700.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "배달의민족"
     },
     {
       "card_id": "CARD00101",
@@ -929,14 +932,15 @@
       "approved_dtime": "20260407202100",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "투썸플레이스",
+      "merchant_name": "리틀포레스트 베이커",
       "merchant_regno": "581400001",
       "approved_amt": 15500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "카페/간식"
+      "_category": "카페/간식",
+      "_original_name": "투썸플레이스"
     },
     {
       "card_id": "CARD00101",
@@ -989,14 +993,15 @@
       "approved_dtime": "20260423113400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "강남정형외과",
+      "merchant_name": "서울아산 소아과",
       "merchant_regno": "801100001",
       "approved_amt": 11100.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "의료/건강"
+      "_category": "의료/건강",
+      "_original_name": "강남정형외과"
     },
     {
       "card_id": "CARD00101",
@@ -1912,14 +1917,15 @@
       "approved_dtime": "20260623120400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "김밥천국 역삼점",
+      "merchant_name": "주식회사 케이엔제이",
       "merchant_regno": "581200001",
       "approved_amt": 51000.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "김밥천국 역삼점"
     },
     {
       "card_id": "CARD00101",
@@ -1987,14 +1993,15 @@
       "approved_dtime": "20260624174100",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "이마트 성수점",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200001",
       "approved_amt": 52300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "이마트 성수점"
     },
     {
       "card_id": "CARD00101",
@@ -2407,14 +2414,15 @@
       "approved_dtime": "20260621184200",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "강남정형외과",
+      "merchant_name": "서울아산 소아과",
       "merchant_regno": "801100001",
       "approved_amt": 7800.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "의료/건강"
+      "_category": "의료/건강",
+      "_original_name": "강남정형외과"
     },
     {
       "card_id": "CARD00101",
@@ -2936,14 +2944,15 @@
       "approved_dtime": "20260728195400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "투썸플레이스",
+      "merchant_name": "리틀포레스트 베이커",
       "merchant_regno": "581400001",
       "approved_amt": 14300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "카페/간식"
+      "_category": "카페/간식",
+      "_original_name": "투썸플레이스"
     },
     {
       "card_id": "CARD00101",
@@ -3360,14 +3369,15 @@
       "approved_dtime": "20260807150000",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "이마트 성수점",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200001",
       "approved_amt": 11300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "이마트 성수점"
     },
     {
       "card_id": "CARD00101",
@@ -3375,14 +3385,15 @@
       "approved_dtime": "20260803194700",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "이마트 성수점",
+      "merchant_name": "주식회사 케이엔제이",
       "merchant_regno": "581200001",
       "approved_amt": 9500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "이마트 성수점"
     },
     {
       "card_id": "CARD00101",
@@ -3810,14 +3821,15 @@
       "approved_dtime": "20260802195900",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "서초튼튼약국",
+      "merchant_name": "서울아산 소아과",
       "merchant_regno": "801100001",
       "approved_amt": 1300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "의료/건강"
+      "_category": "의료/건강",
+      "_original_name": "서초튼튼약국"
     },
     {
       "card_id": "CARD00101",

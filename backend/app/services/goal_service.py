@@ -7,7 +7,7 @@ from typing import Optional
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import Session
 
-from app.models.entities import FinancialProfile, Goal
+from app.models.entities import FinancialProfile, FinancialSnapshot, Goal
 from app.models.schemas import GoalCreate, GoalFeasibility
 
 
@@ -49,35 +49,45 @@ def delete_goal(db: Session, goal_id: int) -> bool:
 
 
 def analyze_feasibility(db: Session, goal_id: int) -> Optional[GoalFeasibility]:
-    """목표 달성 가능성 분석
-    - 필요 월 저축액 vs 현재 월 여유 자금 비교
+    """목표 달성 가능성 분석 (1차 단순형)
+    - 필요 월 저축액 vs 월 여유 자금(최신 스냅샷, 없으면 프로필) 비교
+    - 기준일은 최신 스냅샷의 산출 기준일(마이데이터 마지막 일자). 스냅샷이 없으면 오늘
     """
     goal = db.get(Goal, goal_id)
     if goal is None:
         return None
 
-    profile = db.query(FinancialProfile).filter_by(user_id=goal.user_id).first()
-    monthly_surplus = 0.0
-    if profile:
-        monthly_surplus = profile.monthly_income - (
-            profile.monthly_fixed_expense + profile.monthly_variable_expense
-        )
+    snap = (
+        db.query(FinancialSnapshot).filter_by(user_id=goal.user_id)
+        .order_by(FinancialSnapshot.calculated_at.desc(), FinancialSnapshot.id.desc()).first()
+    )
+    if snap is not None and snap.net_cash_flow is not None:
+        monthly_surplus = snap.net_cash_flow
+        today = snap.as_of
+    else:
+        today = date.today()
+        profile = db.query(FinancialProfile).filter_by(user_id=goal.user_id).first()
+        monthly_surplus = 0.0
+        if profile:
+            monthly_surplus = profile.monthly_income - (
+                profile.monthly_fixed_expense + profile.monthly_variable_expense
+            )
 
     shortfall = max(goal.target_amount - goal.current_amount, 0)
 
     # 목표일까지 필요한 월 저축액
     required_monthly = 0.0
     if goal.target_date:
-        months_left = _months_between(date.today(), goal.target_date)
+        months_left = _months_between(today, goal.target_date)
         required_monthly = shortfall / months_left if months_left > 0 else shortfall
 
     # 현재 저축 속도 기준 달성 예상 시기
     expected_completion = None
     if monthly_surplus > 0 and shortfall > 0:
         months_needed = int(shortfall / monthly_surplus) + 1
-        expected_completion = date.today() + relativedelta(months=months_needed)
+        expected_completion = today + relativedelta(months=months_needed)
     elif shortfall == 0:
-        expected_completion = date.today()
+        expected_completion = today
 
     achievable = monthly_surplus >= required_monthly if goal.target_date else monthly_surplus > 0
 

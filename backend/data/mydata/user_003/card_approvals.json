@@ -70,14 +70,15 @@
       "approved_dtime": "20260316193400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "맘스터치 강남점",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200003",
       "approved_amt": 86300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "맘스터치 강남점"
     },
     {
       "card_id": "CARD00302",
@@ -280,14 +281,15 @@
       "approved_dtime": "20260318133800",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "교보문고 광화문점",
+      "merchant_name": "하루 요가원",
       "merchant_regno": "783200003",
       "approved_amt": 33700.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "문화/여가"
+      "_category": "문화/여가",
+      "_original_name": "교보문고 광화문점"
     },
     {
       "card_id": "CARD00303",
@@ -385,14 +387,15 @@
       "approved_dtime": "20260309205900",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "배스킨라빈스",
+      "merchant_name": "리틀포레스트 베이커",
       "merchant_regno": "581400003",
       "approved_amt": 21700.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "카페/간식"
+      "_category": "카페/간식",
+      "_original_name": "배스킨라빈스"
     },
     {
       "card_id": "CARD00303",
@@ -734,14 +737,15 @@
       "approved_dtime": "20260420192800",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "김밥천국 역삼점",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200003",
       "approved_amt": 106200.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "김밥천국 역삼점"
     },
     {
       "card_id": "CARD00303",
@@ -1458,14 +1462,15 @@
       "approved_dtime": "20260519100900",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "교보문고 광화문점",
+      "merchant_name": "하루 요가원",
       "merchant_regno": "783200003",
       "approved_amt": 35500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "문화/여가"
+      "_category": "문화/여가",
+      "_original_name": "교보문고 광화문점"
     },
     {
       "card_id": "CARD00303",
@@ -1533,14 +1538,15 @@
       "approved_dtime": "20260513170300",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "투썸플레이스",
+      "merchant_name": "리틀포레스트 베이커",
       "merchant_regno": "581400003",
       "approved_amt": 60600.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "카페/간식"
+      "_category": "카페/간식",
+      "_original_name": "투썸플레이스"
     },
     {
       "card_id": "CARD00302",
@@ -1942,14 +1948,15 @@
       "approved_dtime": "20260627215600",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "다이소 역삼점",
+      "merchant_name": "에이치앤엠 코리아",
       "merchant_regno": "531100003",
       "approved_amt": 62700.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "쇼핑"
+      "_category": "쇼핑",
+      "_original_name": "다이소 역삼점"
     },
     {
       "card_id": "CARD00301",
@@ -2561,14 +2568,15 @@
       "approved_dtime": "20260708161900",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "네이버쇼핑",
+      "merchant_name": "에이치앤엠 코리아",
       "merchant_regno": "531100003",
       "approved_amt": 105100.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "쇼핑"
+      "_category": "쇼핑",
+      "_original_name": "네이버쇼핑"
     },
     {
       "card_id": "CARD00303",
@@ -2756,14 +2764,15 @@
       "approved_dtime": "20260712092100",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "투썸플레이스",
+      "merchant_name": "리틀포레스트 베이커",
       "merchant_regno": "581400003",
       "approved_amt": 63100.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "카페/간식"
+      "_category": "카페/간식",
+      "_original_name": "투썸플레이스"
     },
     {
       "card_id": "CARD00301",
@@ -3060,14 +3069,15 @@
       "approved_dtime": "20260805211900",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "배달의민족",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200003",
       "approved_amt": 21500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "배달의민족"
     },
     {
       "card_id": "CARD00302",
@@ -3135,14 +3145,15 @@
       "approved_dtime": "20260803134000",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "올리브영 강남점",
+      "merchant_name": "에이치앤엠 코리아",
       "merchant_regno": "531100003",
       "approved_amt": 14500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "쇼핑"
+      "_category": "쇼핑",
+      "_original_name": "올리브영 강남점"
     },
     {
       "card_id": "CARD00301",
@@ -3375,14 +3386,15 @@
       "approved_dtime": "20260806114900",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "볼링클럽 서초",
+      "merchant_name": "하루 요가원",
       "merchant_regno": "783200003",
       "approved_amt": 7400.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "문화/여가"
+      "_category": "문화/여가",
+      "_original_name": "볼링클럽 서초"
     },
     {
       "card_id": "CARD00301",

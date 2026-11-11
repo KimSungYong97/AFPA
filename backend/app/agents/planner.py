@@ -1,7 +1,7 @@
 """5.4 Financial Planning Agent
 
 전략:
-    1) OpenAI API 키가 설정되어 있으면 → LLM Agent (llm_planner)가 도구를 호출하며 계획 수립
+    1) LLM(vLLM 또는 OpenAI)이 설정되어 있으면 → LLM Agent (llm_planner)가 도구를 호출하며 계획 수립
     2) 키가 없거나 LLM 호출 실패 시     → 규칙 기반 폴백 (Phase 1 MVP 규칙)
 
 규칙 기반 로직은 LLM Agent의 도구(get_rule_based_suggestions)로도 재사용된다.
@@ -14,6 +14,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.llm_client import llm_enabled
 from app.models.entities import ActionPlan
 from app.models.schemas import ActionItem, ActionPlanOut
 from app.services import goal_service, profile_service
@@ -25,18 +26,25 @@ settings = get_settings()
 def generate_action_plan(db: Session, user_id: int, goal_id: Optional[int] = None) -> ActionPlanOut:
     """Action Plan 생성 — LLM 우선, 실패 시 규칙 기반 폴백"""
     plan: Optional[ActionPlanOut] = None
+    fallback_reason: Optional[str] = None
 
-    if settings.openai_api_key:
+    if llm_enabled():
         try:
             from app.agents.llm_planner import generate_llm_action_plan
 
             plan = generate_llm_action_plan(db, user_id, goal_id)
+            plan.generated_by = "llm"
             logger.info("LLM Agent가 Action Plan 생성 (user_id=%s)", user_id)
         except Exception as e:  # noqa: BLE001 - LLM 실패 시 규칙 기반으로 폴백
             logger.warning("LLM Agent 실패, 규칙 기반으로 폴백: %s", e)
+            fallback_reason = f"{type(e).__name__}: {str(e)[:200]}"
+    else:
+        fallback_reason = "LLM이 설정되지 않았습니다 (LLM_BASE_URL 또는 OPENAI_API_KEY)"
 
     if plan is None:
         plan = _generate_rule_based_plan(db, user_id, goal_id)
+        plan.generated_by = "rule"
+        plan.fallback_reason = fallback_reason
 
     _save_plan(db, user_id, plan)
     return plan

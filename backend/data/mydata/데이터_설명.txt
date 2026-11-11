@@ -3,7 +3,7 @@
 ================================================================================
 근거 규격 : 금융분야 마이데이터 표준 API 규격 v202102-1
 생성 도구 : backend/scripts/generate_mydata.py  (입력: data/personas.json)
-DB 적재   : backend/scripts/mydata_adapter.py → seed_data.py
+DB 적재   : backend/scripts/seed_data.py (app/pipeline: 자동 분류 → 프로필 엔진 → 스냅샷)
 디렉터리  : data/mydata/user_{id:03d}/  (사용자 1명당 폴더 1개, JSON 16개)
 
 --------------------------------------------------------------------------------
@@ -30,11 +30,11 @@ DB 적재   : backend/scripts/mydata_adapter.py → seed_data.py
     (예: 박과소 1.35 → 소비 급증 → 5.5 모니터링 알림 테스트용).
 
 ■ 규격 외 내부 필드 (언더스코어 접두사)
-    _user.json                    : 사용자 메타 (규격 외 — 어댑터 참조용)
+    _user.json                    : 사용자 메타 (규격 외 — 시드 스크립트 참조용)
     card_approvals의 _category    : 지출 카테고리 힌트 (식비/쇼핑/교통 등)
     card_approvals의 _is_fixed    : 고정지출 여부 힌트 (구독서비스 true)
-    → 실제 마이데이터 응답에는 없는 필드로, DB 변환(mydata_adapter) 시
-      가맹점명 키워드 분류 대신 사용된다.
+    → 실제 마이데이터 응답에는 없는 필드로, 분류 로직(app/pipeline)은 사용하지 않는다.
+      정답 라벨로만 쓰이며 scripts/evaluate_classification.py 가 분류 정확도 평가에 사용한다.
 
 ■ 정합성 규칙 (생성 시 자동 검증)
     은행 입출금 + 정기예금 + 페이잔액  == persona.profile.deposit

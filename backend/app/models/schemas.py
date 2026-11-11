@@ -67,6 +67,10 @@ class ActionPlanOut(BaseModel):
     rationale: str               # 추천 근거
     expected_outcome: str        # 예상 결과
     created_at: datetime
+    generated_by: str = "rule"                       # llm(AI가 도구를 호출해 작성) / rule(규칙 기반)
+    llm_tools_used: list[str] = []                   # LLM이 호출(또는 코드가 미리 조회해 준)한 도구 이름
+    llm_mode: Optional[str] = None                   # tool_calling / prefetched_context
+    fallback_reason: Optional[str] = None            # LLM을 시도했으나 규칙 기반으로 대체한 이유
 
 
 # ---------- 5.5 / 5.6 모니터링 ----------
@@ -75,3 +79,38 @@ class MonitoringAlert(BaseModel):
     message: str
     severity: str        # info | warning | critical
     detected_at: datetime
+
+
+# ---------- 1차: 온보딩 / 마이데이터 / 분류 ----------
+class ManualAssetIn(BaseModel):
+    asset_type: str = Field(pattern="^(CASH|GOLD|OTHER)$", description="CASH / GOLD / OTHER")
+    name: Optional[str] = None
+    amount: float = Field(ge=0)
+
+
+class OnboardingInput(BaseModel):
+    """마이데이터로 알 수 없는 정보만 입력받는다 (소득·지출·잔액은 입력받지 않음)"""
+    birth_date: date
+    gender: Optional[str] = Field(default=None, pattern="^(MALE|FEMALE|OTHER)$")
+    employment_status: str = Field(pattern="^(FULL_TIME|FREELANCER|SELF_EMPLOYED|UNEMPLOYED)$")
+    housing_type: str = Field(pattern="^(OWNED|JEONSE|MONTHLY_RENT)$")
+    housing_cost_monthly: Optional[float] = Field(default=None, gt=0, description="월세 선택 시 필수")
+    location_region: str
+    location_district: str
+    risk_tolerance: Optional[str] = Field(default="BALANCED", pattern="^(CONSERVATIVE|BALANCED|AGGRESSIVE)$")
+    manual_assets: Optional[list[ManualAssetIn]] = None
+
+
+class ConsentIn(BaseModel):
+    is_consent_merchant_name_regno: bool = True
+    is_consent_trans_memo: bool = True
+    is_consent_trans_category: bool = True
+
+
+class OverrideIn(BaseModel):
+    merchant: str = Field(description="분류를 바로잡을 가맹점명")
+    category: str
+
+
+class FlowOverrideIn(BaseModel):
+    category: str

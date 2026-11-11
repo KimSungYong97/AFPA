@@ -1,0 +1,43 @@
+{
+  "_comment": "가상 사용자의 온보딩 입력값. 마이데이터로 알 수 없는 정보(인적·환경·수동 자산)만 포함한다.",
+  "1": {
+    "birth_date": "1998-03-14",
+    "gender": "MALE",
+    "employment_status": "FULL_TIME",
+    "housing_type": "MONTHLY_RENT",
+    "housing_cost_monthly": 550000,
+    "location_region": "서울",
+    "location_district": "서초구",
+    "risk_tolerance": "BALANCED",
+    "manual_assets": [
+      {"asset_type": "CASH", "name": "지갑·집 보관 현금", "amount": 150000}
+    ]
+  },
+  "2": {
+    "birth_date": "1992-07-21",
+    "gender": "FEMALE",
+    "employment_status": "FULL_TIME",
+    "housing_type": "JEONSE",
+    "housing_cost_monthly": null,
+    "location_region": "서울",
+    "location_district": "송파구",
+    "risk_tolerance": "CONSERVATIVE",
+    "manual_assets": [
+      {"asset_type": "GOLD", "name": "금 현물(돌반지 등)", "amount": 3000000},
+      {"asset_type": "CASH", "name": "지갑·집 보관 현금", "amount": 200000}
+    ]
+  },
+  "3": {
+    "birth_date": "1996-11-02",
+    "gender": "OTHER",
+    "employment_status": "FULL_TIME",
+    "housing_type": "MONTHLY_RENT",
+    "housing_cost_monthly": 700000,
+    "location_region": "서울",
+    "location_district": "강남구",
+    "risk_tolerance": "AGGRESSIVE",
+    "manual_assets": [
+      {"asset_type": "CASH", "name": "지갑·집 보관 현금", "amount": 50000}
+    ]
+  }
+}

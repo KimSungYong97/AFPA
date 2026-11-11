@@ -724,6 +724,10 @@ def main() -> None:
 
         print(f"[{spec['name']}] {user_dir.name}/ → {len(GENERATORS) + 1}개 파일 생성 (정합성 OK)")
 
+    # 3단계 LLM 분류 시연·평가용: 승인내역 일부를 사전에 없는 가게 이름으로 바꾼다 (금액·카테고리는 그대로)
+    from scripts.inject_unfamiliar_merchants import main as inject_unfamiliar
+    inject_unfamiliar()
+
     print(f"\n✅ 마이데이터 테스트 데이터셋 생성 완료 → {MYDATA_DIR}")
 
 

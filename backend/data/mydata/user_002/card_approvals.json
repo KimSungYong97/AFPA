@@ -130,14 +130,15 @@
       "approved_dtime": "20260303174100",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "쿠팡",
+      "merchant_name": "에이치앤엠 코리아",
       "merchant_regno": "531100002",
       "approved_amt": 64300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "쇼핑"
+      "_category": "쇼핑",
+      "_original_name": "쿠팡"
     },
     {
       "card_id": "CARD00201",
@@ -415,14 +416,15 @@
       "approved_dtime": "20260328101800",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "서초튼튼약국",
+      "merchant_name": "서울아산 소아과",
       "merchant_regno": "801100002",
       "approved_amt": 11300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "의료/건강"
+      "_category": "의료/건강",
+      "_original_name": "서초튼튼약국"
     },
     {
       "card_id": "CARD00202",
@@ -704,14 +706,15 @@
       "approved_dtime": "20260402192400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "배달의민족",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200002",
       "approved_amt": 123400.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "배달의민족"
     },
     {
       "card_id": "CARD00202",
@@ -749,14 +752,15 @@
       "approved_dtime": "20260411191100",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "네이버쇼핑",
+      "merchant_name": "에이치앤엠 코리아",
       "merchant_regno": "531100002",
       "approved_amt": 87500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "쇼핑"
+      "_category": "쇼핑",
+      "_original_name": "네이버쇼핑"
     },
     {
       "card_id": "CARD00202",
@@ -884,14 +888,15 @@
       "approved_dtime": "20260411191800",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "볼링클럽 서초",
+      "merchant_name": "하루 요가원",
       "merchant_regno": "783200002",
       "approved_amt": 54900.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "문화/여가"
+      "_category": "문화/여가",
+      "_original_name": "볼링클럽 서초"
     },
     {
       "card_id": "CARD00202",
@@ -1248,14 +1253,15 @@
       "approved_dtime": "20260511190400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "GS25 서초점",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200002",
       "approved_amt": 50100.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "GS25 서초점"
     },
     {
       "card_id": "CARD00201",
@@ -1638,14 +1644,15 @@
       "approved_dtime": "20260504152300",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "인터파크티켓",
+      "merchant_name": "하루 요가원",
       "merchant_regno": "783200002",
       "approved_amt": 35900.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "문화/여가"
+      "_category": "문화/여가",
+      "_original_name": "인터파크티켓"
     },
     {
       "card_id": "CARD00201",
@@ -2092,14 +2099,15 @@
       "approved_dtime": "20260611203000",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "무신사",
+      "merchant_name": "에이치앤엠 코리아",
       "merchant_regno": "531100002",
       "approved_amt": 32100.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "쇼핑"
+      "_category": "쇼핑",
+      "_original_name": "무신사"
     },
     {
       "card_id": "CARD00202",
@@ -2392,14 +2400,15 @@
       "approved_dtime": "20260616213400",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "서초튼튼약국",
+      "merchant_name": "서울아산 소아과",
       "merchant_regno": "801100002",
       "approved_amt": 23600.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "의료/건강"
+      "_category": "의료/건강",
+      "_original_name": "서초튼튼약국"
     },
     {
       "card_id": "CARD00202",
@@ -2651,14 +2660,15 @@
       "approved_dtime": "20260718153300",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "맘스터치 강남점",
+      "merchant_name": "봄날 곱창",
       "merchant_regno": "581200002",
       "approved_amt": 68300.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "식비"
+      "_category": "식비",
+      "_original_name": "맘스터치 강남점"
     },
     {
       "card_id": "CARD00202",
@@ -3056,14 +3066,15 @@
       "approved_dtime": "20260722141600",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "GNC 건강식품",
+      "merchant_name": "서울아산 소아과",
       "merchant_regno": "801100002",
       "approved_amt": 14900.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "의료/건강"
+      "_category": "의료/건강",
+      "_original_name": "GNC 건강식품"
     },
     {
       "card_id": "CARD00202",
@@ -3525,14 +3536,15 @@
       "approved_dtime": "20260801100000",
       "status": "01",
       "pay_type": "01",
-      "merchant_name": "볼링클럽 서초",
+      "merchant_name": "하루 요가원",
       "merchant_regno": "783200002",
       "approved_amt": 10500.0,
       "modified_amt": null,
       "total_install_cnt": null,
       "krw_amt": null,
       "foreign_yn": false,
-      "_category": "문화/여가"
+      "_category": "문화/여가",
+      "_original_name": "볼링클럽 서초"
     },
     {
       "card_id": "CARD00201",
