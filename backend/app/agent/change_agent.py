@@ -22,7 +22,9 @@ from app.config import get_settings
 from app.llm_client import get_llm_client, llm_enabled
 from app.models.entities import AgentRun, FinancialSnapshot, PlanVersion
 from app.pipeline import params
-from app.planner import candidates as cand_engine
+from app.agent import tools as T
+from app.agent.tools import Ctx as _Ctx, tool_get_plan_status, tool_what_if_save_more  # noqa: F401 (테스트·호환용)
+from app.agent.tools import won as _won, ym as _ym  # noqa: F401
 from app.services import planner_service as ps
 from app.services.briefing_service import validate_numbers
 
@@ -37,7 +39,9 @@ FIELDS = [
     ("dsr_ratio", "빚 상환 부담(DSR)", "pct", "abs", params.A_RATIO_CHANGE_POINTS),
     ("emergency_fund_ratio", "비상금 충족률", "pct", "abs", params.A_RATIO_CHANGE_POINTS),
 ]
-TOOL_LABEL = {"get_profile_changes": "프로필 변화 조회", "get_spending_events": "소비 변화 조회",
+CHANGE_TOOLS = ["get_profile_changes", "get_spending_events", "get_plan_status", "get_recommended_actions",
+                "get_cash_forecast", "get_outcome_report", "what_if_save_more"]
+TOOL_LABEL = {"get_profile_changes": "프로필 변화 조회", "get_spending_events": "소비 변화 조회", "get_cash_forecast": "월중 현금 전망 조회",
               "get_plan_status": "계획 이탈 여부 확인", "get_recommended_actions": "대응 행동 후보 조회",
               "what_if_save_more": "'더 저축하면?' 계산"}
 
@@ -45,14 +49,6 @@ TOOL_LABEL = {"get_profile_changes": "프로필 변화 조회", "get_spending_ev
 # ===========================================================================
 # 표현 도우미 — LLM에게 주는 숫자는 모두 사람이 읽는 문자열로 미리 만들어 둔다 (수치 검증의 근거가 된다)
 # ===========================================================================
-def _won(v: float) -> str:
-    return f"{round(v):,}원"
-
-
-def _ym(d: Optional[date]) -> str:
-    return "달성 어려움" if d is None else f"{d.year}년 {d.month}월"
-
-
 def _fmt(v: Optional[float], unit: str) -> str:
     if v is None:
         return "없음"
@@ -97,111 +93,6 @@ def compare_snapshots(prev: FinancialSnapshot, cur: FinancialSnapshot) -> List[d
 
 
 # ===========================================================================
-# 도구 (코드): 모두 조회·계산만 하고 상태를 바꾸지 않는다
-# ===========================================================================
-class _Ctx:
-    def __init__(self, db: Session, user_id: int, today: Optional[date], changes: List[dict], events: List[dict]):
-        self.db, self.user_id, self.today = db, user_id, today
-        self.changes, self.events = changes, events
-
-
-def tool_get_profile_changes(c: _Ctx, **_) -> dict:
-    """지난번 확인 이후 달라진 금융 프로필 항목(소득·여유 자금·순자산·점수 등)을 조회한다."""
-    if not c.changes:
-        return {"changes": [], "note": "눈에 띄게 달라진 프로필 항목이 없어요."}
-    return {"changes": [{"id": x["id"], "text": x["text"]} for x in c.changes]}
-
-
-def tool_get_spending_events(c: _Ctx, **_) -> dict:
-    """카테고리별 소비 변화 이벤트(구조적/일시적 판정 포함)를 조회한다."""
-    if not c.events:
-        return {"events": [], "note": "감지된 소비 변화가 없어요."}
-    return {"events": [{"id": e["id"], "judgement": "구조적(지속될 변화)" if e["judgement"] == "structural" else "일시적",
-                        "text": e["message"]} for e in c.events]}
-
-
-def tool_get_plan_status(c: _Ctx, **_) -> dict:
-    """현재 계획과 지금 상황을 비교한다: 계획 변경이 필요한지(코드 판정), 목표별 달성 예상 시기 변화."""
-    plan = ps.active_plan(c.db, c.user_id)
-    if plan is None:
-        return {"has_plan": False, "plan_change_needed": False, "note": "아직 만들어진 계획이 없어요."}
-    ctx = ps.build_context(c.db, c.user_id, exclude_adopted=False)
-    dev = ps.deviation(c.db, c.user_id, ctx)
-    base = json.loads(plan.baseline_json or "{}")
-    goals = []
-    for g in base.get("goals", []):
-        now = ctx.base.goal(g["name"])
-        old = date.fromisoformat(g["completion_date"]) if g.get("completion_date") else None
-        new = now.completion_date if now else None
-        delay = None
-        if old and new:
-            delay = (new.year - old.year) * 12 + (new.month - old.month)
-        goals.append({"goal": g["name"], "planned": _ym(old), "now": _ym(new),
-                      "delay": None if delay is None else (f"{abs(delay)}개월 {'늦어짐' if delay > 0 else '빨라짐'}" if delay else "변화 없음")})
-    return {"has_plan": True, "plan_change_needed": dev is not None,
-            "reason": dev["message"] if dev else "계획과 큰 차이가 없어요.",
-            "budget_in_plan": _won(plan.budget_at_plan), "budget_now": _won(ctx.budget), "goals": goals}
-
-
-def tool_get_recommended_actions(c: _Ctx, **_) -> dict:
-    """지금 상황에서 효과가 큰 순서의 대응 행동 후보 3개를 조회한다(효과는 코드가 계산한 값)."""
-    ctx = ps.build_context(c.db, c.user_id)
-    cands = cand_engine.generate(ctx.cand_ctx)
-    top = [x for x in cands if x["mandatory"]] + [x for x in cands if not x["mandatory"]][:3]
-    rows = []
-    for i, x in enumerate(top[:3], 1):
-        e = x["effect"]
-        ms = e.get("months_saved")
-        eff = ("목표 달성이 가능해짐" if e.get("makes_reachable")
-               else f"목표 달성이 {abs(ms)}개월 {'앞당겨짐' if ms > 0 else '늦어짐'}" if ms
-               else f"연 {e.get('annual_saving', 0):,}원 절약")
-        rows.append({"rank": i, "title": x["title"], "monthly": f"월 {_won(abs(x['monthly_saving']))}",
-                     "effect": eff, "mandatory": bool(x["mandatory"])})
-    return {"actions": rows}
-
-
-def tool_what_if_save_more(c: _Ctx, monthly_amount: float = 0, **_) -> dict:
-    """매달 저축을 monthly_amount원 더(음수면 덜) 하면 각 목표 달성 시기가 어떻게 바뀌는지 계산한다."""
-    try:
-        amt = float(monthly_amount)
-        res = ps.scenarios_view(c.db, c.user_id, [{"kind": "save_delta", "label": f"월 {round(amt):,}원 추가 저축", "delta": amt}])
-    except Exception as e:  # noqa: BLE001 - 범위 오류 등을 LLM에 돌려줘 다시 시도하게 한다
-        return {"error": str(e)}
-    rows = []
-    for r in res["scenarios"][0]["effects"]:
-        ms = r["months_saved"]
-        eff = ("기한 내 달성이 가능해짐" if r["makes_reachable"] else "기한 내 달성이 어려워짐" if r["becomes_unreachable"]
-               else f"{abs(ms)}개월 {'앞당겨짐' if ms > 0 else '늦어짐'}" if ms else "변화 없음")
-        base_c = date.fromisoformat(r["base_completion"]) if r["base_completion"] else None
-        new_c = date.fromisoformat(r["new_completion"]) if r["new_completion"] else None
-        rows.append({"goal": r["goal"], "now": _ym(base_c), "after": _ym(new_c), "effect": eff})
-    return {"scenario": f"월 {_won(amt)} 추가 저축", "goals": rows}
-
-
-TOOLS: Dict[str, Tuple[Callable, dict]] = {
-    "get_profile_changes": (tool_get_profile_changes, {}),
-    "get_spending_events": (tool_get_spending_events, {}),
-    "get_plan_status": (tool_get_plan_status, {}),
-    "get_recommended_actions": (tool_get_recommended_actions, {}),
-    "what_if_save_more": (tool_what_if_save_more, {"monthly_amount": {
-        "type": "number", "description": "매달 추가로 저축할 금액(원). 줄이려면 음수."}}),
-}
-TOOL_SCHEMAS = [{"type": "function", "function": {
-    "name": n, "description": fn.__doc__,
-    "parameters": {"type": "object", "properties": props, "required": list(props)}}} for n, (fn, props) in TOOLS.items()]
-
-
-def _exec(c: _Ctx, name: str, args: dict) -> str:
-    entry = TOOLS.get(name)
-    if entry is None:
-        return json.dumps({"error": f"알 수 없는 도구: {name}"}, ensure_ascii=False)
-    try:
-        return json.dumps(entry[0](c, **args), ensure_ascii=False)
-    except Exception as e:  # noqa: BLE001
-        return json.dumps({"error": str(e)}, ensure_ascii=False)
-
-
-# ===========================================================================
 # 조사·판단 (LLM)
 # ===========================================================================
 SYSTEM_PROMPT = """당신은 사용자의 금융 프로필을 지켜보는 '변화 감시 agent'입니다.
@@ -209,7 +100,7 @@ SYSTEM_PROMPT = """당신은 사용자의 금융 프로필을 지켜보는 '변�
 (3) 계획을 바꿔야 하는지를 판단해 사용자에게 알리세요.
 
 진행 방법
-1. 먼저 get_profile_changes, get_spending_events, get_plan_status를 호출해 변화와 계획 상태를 확인합니다.
+1. 먼저 get_profile_changes, get_spending_events, get_plan_status를 호출해 변화와 계획 상태를 확인합니다. 월중 전망 경고가 있으면 get_cash_forecast도 확인합니다.
 2. 계획 변경이 필요하거나 변화가 크면 get_recommended_actions나 what_if_save_more로 대응 방안의 효과를 확인합니다.
 3. 조사가 끝나면 최종 응답을 JSON으로만 출력합니다.
 
@@ -255,7 +146,7 @@ def _investigate(c: _Ctx, steps: List[dict], facts: List[str]) -> Tuple[dict, st
             last_round = rnd == params.A_MAX_TOOL_ROUNDS      # 조사 횟수를 다 썼으면 도구 없이 결론만 내게 한다
             if last_round:
                 messages.append({"role": "user", "content": "조사는 여기까지 하고, 지금까지 확인한 사실만으로 최종 JSON을 출력하세요."})
-            kwargs = {} if last_round else {"tools": TOOL_SCHEMAS}
+            kwargs = {} if last_round else {"tools": T.schemas(CHANGE_TOOLS)}
             resp = client.chat.completions.create(model=model, messages=messages, temperature=0.1,
                                                   max_tokens=900, extra_body=extra, **kwargs)
             msg = resp.choices[0].message
@@ -266,7 +157,7 @@ def _investigate(c: _Ctx, steps: List[dict], facts: List[str]) -> Tuple[dict, st
                         args = json.loads(tc.function.arguments or "{}")
                     except ValueError:
                         args = {}
-                    out = _exec(c, tc.function.name, args)
+                    out = T.execute(c, tc.function.name, args, CHANGE_TOOLS)
                     used.append(tc.function.name)
                     facts.append(out)
                     steps.append({"kind": "tool", "title": TOOL_LABEL.get(tc.function.name, tc.function.name),
@@ -281,10 +172,10 @@ def _investigate(c: _Ctx, steps: List[dict], facts: List[str]) -> Tuple[dict, st
         logger.warning("서버가 tool-calling을 지원하지 않아 사전 조회 방식으로 전환: %s", str(e)[:120])
 
     # 폴백: 핵심 도구 결과를 코드가 먼저 조회해 프롬프트에 넣는다(prefetched_context)
-    names = ["get_profile_changes", "get_spending_events", "get_plan_status", "get_recommended_actions"]
+    names = ["get_profile_changes", "get_spending_events", "get_plan_status", "get_recommended_actions", "get_cash_forecast"]
     ctx_data = {}
     for n in names:
-        out = _exec(c, n, {})
+        out = T.execute(c, n, {}, CHANGE_TOOLS)
         facts.append(out)
         ctx_data[n] = json.loads(out)
         steps.append({"kind": "tool", "title": TOOL_LABEL[n], "detail": "(코드가 먼저 조회해 전달)"})
@@ -325,8 +216,11 @@ def _rule_report(changes: List[dict], events: List[dict], status: dict) -> dict:
     headline = (f"지난번 확인 이후 {len(changes)}가지 프로필 변화가 있어요: {names}." if changes
                 else "눈에 띄는 프로필 변화는 없지만 소비 변화가 감지됐어요.")
     findings = [{"ref": c["id"], "meaning": "이 변화가 목표 달성에 영향을 줄 수 있어요."} for c in changes]
-    findings += [{"ref": e["id"], "meaning": "구조적 변화라 계속될 수 있어요." if e["judgement"] == "structural"
-                  else "이번 달에만 나타난 변화예요."} for e in events]
+    findings += [{"ref": e["id"], "meaning": (
+        "이번 달 소비 속도를 기준으로 한 전망이에요. 소비를 줄이면 달라질 수 있어요." if e["judgement"] == "forecast"
+        else "제안을 실천한 결과예요. 잘하고 있어요!" if e["judgement"] == "outcome"
+        else "구조적 변화라 계속될 수 있어요." if e["judgement"] == "structural" else "이번 달에만 나타난 변화예요.")}
+        for e in events]
     questions = [f"{e['category']} 지출 증가는 이번 한 번뿐인가요, 앞으로도 이어질 것 같나요?"
                  for e in events if e["judgement"] == "temporary" and e["event_type"] == "category_increase"][:2]
     return {"headline": headline, "findings": findings,
@@ -354,6 +248,52 @@ def run_dict(r: AgentRun) -> dict:
 def history(db: Session, user_id: int, limit: int = 10) -> List[dict]:
     rows = db.query(AgentRun).filter_by(user_id=user_id).order_by(AgentRun.id.desc()).limit(limit).all()
     return [run_dict(r) for r in rows]
+
+
+def forecast_event(db: Session, user_id: int, seen: set) -> Optional[dict]:
+    """월중 현금 전망이 '주의'·'위험'이면 알릴 이벤트로 만든다(이미 알린 같은 위험도는 제외)."""
+    try:
+        f = ps.cash_forecast(db, user_id)
+    except LookupError:
+        return None
+    if f.get("status") != "ok" or f["risk"] == "ok":
+        return None
+    ev = {"event_type": "cash_forecast", "category": f["risk"], "month": f["month"], "judgement": "forecast",
+          "grade": "high" if f["risk"] == "danger" else "medium"}
+    if _event_key(ev) in seen:
+        return None
+    d = date.fromisoformat(f["min_cash_date"])
+    over = f["overspent_categories"][0] if f["overspent_categories"] else None
+    if f["risk"] == "danger":
+        msg = (f"이번 달 소비 속도라면 {d.month}월 {d.day}일쯤 현금이 부족해질 수 있어요(월중 최저 {_won(f['min_cash'])}). "
+               f"변동지출이 평소 {_won(f['baseline_variable'])}보다 많은 {_won(f['projected_variable'])}로 예상돼요.")
+    elif over:
+        msg = (f"이번 달 변동지출이 평소 {_won(f['baseline_variable'])}보다 많은 {_won(f['projected_variable'])}로 예상돼요. "
+               f"특히 {over['category']}이(가) 평소 {_won(over['baseline'])}에서 {_won(over['projected'])}로 늘 것 같아요.")
+    else:
+        msg = (f"이번 달 {d.month}월 {d.day}일쯤 현금이 {_won(f['min_cash'])}까지 줄어 여유가 적어요. "
+               f"월말 예상 잔액은 {_won(f['end_cash'])}이에요.")
+    return {**ev, "message": msg, "reason": "월중 현금 전망"}
+
+
+def outcome_events(db: Session, user_id: int, seen: set) -> List[dict]:
+    """실천한 제안의 결과(사후 보고)를 알릴 이벤트로 만든다. 같은 제안·같은 달은 한 번만 알린다."""
+    from app.services import feedback_service
+    r = feedback_service.outcome_report(db, user_id)
+    out: List[dict] = []
+    for it in r["items"]:
+        if it["state"] not in ("achieved", "partial") or not it["month"]:
+            continue
+        ev = {"event_type": "outcome", "category": it["key"], "month": it["month"], "judgement": "outcome", "grade": "low",
+              "reason": "실천 결과"}
+        if _event_key(ev) in seen:
+            continue
+        pct = round(it["ratio"] * 100)
+        msg = (f"'{it['title']}'을(를) 실천해서 {it['month']}에 평소보다 {_won(it['actual'])} 덜 썼어요(목표 {_won(it['expected'])}의 {pct}%).")
+        out.append({**ev, "message": msg})
+    if out and r["goal_effect"] and (r["goal_effect"]["months_saved"] or r["goal_effect"]["makes_reachable"]):
+        out[0]["message"] += " " + r["headline"].split("아꼈어요.", 1)[-1].strip()
+    return out
 
 
 def _event_key(e: dict) -> str:
@@ -387,7 +327,8 @@ def ensure_baseline(db: Session, user_id: int) -> Optional[AgentRun]:
         return None
     return _save(db, user_id, snap.id, "baseline", body={
         "headline": "지금 상태를 기준으로 기록했어요. 앞으로 달라지는 점을 알려 드릴게요.",
-        "known_events": [_event_key(e) for e in ps.list_events(db, user_id)],
+        "known_events": [_event_key(e) for e in ps.list_events(db, user_id)]
+                        + [_event_key(fe) for fe in [forecast_event(db, user_id, set())] if fe],
         "steps": [{"kind": "observe", "title": "기준 저장", "detail": f"{snap.as_of} 기준 프로필을 기억해 뒀어요."}]})
 
 
@@ -413,8 +354,16 @@ def run(db: Session, user_id: int, use_llm: bool = True, today: Optional[date] =
     known = seen | {_event_key(e) for e in mon["events"]}
     events = [{**e, "id": f"E{i}"} for i, e in enumerate(
         [e for e in mon["events"] if e["event_type"] != "category_decrease" and _event_key(e) not in seen], 1)]
+    ps.track(db, user_id, today)                          # 수락한 제안의 이행 여부를 먼저 갱신한다
+    for oe in outcome_events(db, user_id, seen):          # 사후 보고: 실천한 제안의 결과
+        events.append({**oe, "id": f"E{len(events) + 1}"})
+        known.add(_event_key(oe))
+    fc_event = forecast_event(db, user_id, seen)           # 월중 전망 경고(코드 계산) — 같은 달·같은 위험도는 한 번만
+    if fc_event:
+        events.append({**fc_event, "id": f"E{len(events) + 1}"})
+        known.add(_event_key(fc_event))
     steps.append({"kind": "observe", "title": "변화 감지",
-                  "detail": f"지난번 확인과 비교해 프로필 변화 {len(changes)}건 · 소비 변화 {len(events)}건을 찾았어요."})
+                  "detail": f"지난번 확인과 비교해 프로필 변화 {len(changes)}건 · 소비 변화·전망 경고 {len(events)}건을 찾았어요."})
     c = _Ctx(db, user_id, today, changes, events)
     status = tool_get_plan_status(c)              # 계획 변경 필요 여부는 코드의 판정이 최종이다
     needed = bool(status.get("plan_change_needed"))
@@ -448,7 +397,8 @@ def run(db: Session, user_id: int, use_llm: bool = True, today: Optional[date] =
                                 f"계산 결과(경로 이탈 판정)에 따라 '{'필요' if needed else '불필요'}'로 확정했어요."})
 
     # --- 3. 행동 (코드): 알림 + 재설계 제안(승인 대기) ----------------------------
-    severity = "important" if (needed or any(e["judgement"] == "structural" for e in events)
+    severity = "important" if (needed or any(e["judgement"] == "structural" or e.get("grade") == "high" and e["judgement"] == "forecast"
+                                                 for e in events)
                                or any(x["field"] == "monthly_income_net" for x in changes)) else "info"
     replan_id = None
     if needed:
@@ -460,7 +410,8 @@ def run(db: Session, user_id: int, use_llm: bool = True, today: Optional[date] =
         else:
             pv = (db.query(PlanVersion).filter_by(user_id=user_id, status="pending").order_by(PlanVersion.id.desc()).first())
             replan_id = pv.id if pv else None
-    ps.notify(db, user_id, "agent_change", "high" if needed else "medium", report["headline"][:100],
+    only_outcome = bool(events) and all(e["judgement"] == "outcome" for e in events) and not changes
+    ps.notify(db, user_id, "agent_change", "high" if needed else ("low" if only_outcome else "medium"), report["headline"][:100],
               (report["plan_change_reason"] + " " + report["next_step"]).strip() or report["headline"],
               f"agent:{snap.id}", None, today)
     steps.append({"kind": "act", "title": "알림 보내기", "detail": "알림 센터에 변화 내용을 남겼어요."})

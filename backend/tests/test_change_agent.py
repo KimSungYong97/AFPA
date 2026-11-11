@@ -203,3 +203,28 @@ def test_run_guard_blocks_concurrent_runs(seeded):
     finally:
         change_agent._RUNNING.discard(1)
     assert change_agent.run_guarded(seeded, 1, use_llm=False)["status"] == "baseline"
+
+
+# ---------------------------------------------------------------- 월중 현금 전망 경고
+def test_month_spike_triggers_forecast_alert_once(seeded):
+    demo.simulate_change(seeded, 1, "month_spike")
+    r = change_agent.run(seeded, 1, use_llm=False, today=TODAY)
+    fc = [e for e in r["events"] if e["event_type"] == "cash_forecast"]
+    assert r["status"] == "reported" and len(fc) == 1 and fc[0]["judgement"] == "forecast"
+    assert "예상돼요" in fc[0]["message"] or "부족" in fc[0]["message"]
+    assert seeded.query(Notification).filter_by(kind="agent_change").count() == 1
+    pipeline_service.compute_and_store_snapshot(seeded, 1)               # 같은 상태에서 다시 확인해도
+    again = change_agent.run(seeded, 1, use_llm=False, today=TODAY)
+    assert again["status"] == "no_change"                                # 같은 달·같은 위험도는 반복해서 알리지 않는다
+
+
+def test_forecast_api(seeded):
+    def override():
+        yield seeded
+
+    app.dependency_overrides[get_db] = override
+    try:
+        f = TestClient(app).get("/api/planner/1/forecast").json()
+        assert f["status"] == "ok" and f["risk"] in ("ok", "watch", "danger") and f["days_in_month"] >= 28
+    finally:
+        app.dependency_overrides.clear()

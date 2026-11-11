@@ -1,7 +1,7 @@
 """홈 — 한 화면에서 '지금 내 상황'과 '지금 하면 좋은 일'만 보여 준다"""
 import streamlit as st
 
-from lib import ui
+from lib import forecast, ui
 from lib.api import call, ctx, error_text, get_ok, post_ok, uid
 from lib.fmt import GOAL_STATUS, effect_text, friendly_summary, goal_gap_text, goal_sentence, health_words, short_won, ym
 from lib.nav import go
@@ -61,6 +61,9 @@ def render() -> None:
     st.caption(f"{ym(b['as_of'])} 기준 · 모든 숫자는 계산으로 구한 값이에요"
                + (" · 요약 문장은 AI가 다듬었어요" if b["narrative_source"] == "llm" else ""))
     st.write("")
+
+    # --- 이번 달 전망 (월중 현금 전망)
+    forecast.card(compact=True)
 
     # --- 변화 감시 에이전트의 최신 보고
     okl, latest = get_ok(f"/api/agent/{uid()}/latest")

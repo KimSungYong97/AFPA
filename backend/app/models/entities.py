@@ -335,6 +335,26 @@ class OneOffMark(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
+class PlannerPreference(Base):
+    """거절 학습으로 쌓인 사용자 선호 — 다음 제안에 반영한다 (사용자가 직접 지울 수 있다)
+
+    kind=exclude   : target(후보 키)을 until(포함)까지 다시 제안하지 않는다. until이 없으면 계속
+    kind=cut_scale : target(카테고리)의 절감 제안 규모를 value배로 줄인다
+    """
+
+    __tablename__ = "planner_preferences"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(12))
+    target: Mapped[str] = mapped_column(String(80))
+    value: Mapped[float] = mapped_column(Float, default=1.0)
+    until: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    reason_code: Mapped[str] = mapped_column(String(12), default="")
+    reason_text: Mapped[str] = mapped_column(String(200), default="")
+    created_on: Mapped[date] = mapped_column(Date)
+
+
 class AgentRun(Base):
     """변화 감시 에이전트 실행 이력 — 무엇을 관찰·조사·판단하고 어떤 행동을 했는지 남긴다"""
 

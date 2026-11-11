@@ -56,3 +56,27 @@ def demo_change(user_id: int, body: DemoChangeIn, db: Session = Depends(get_db))
         raise HTTPException(404, str(e))
     except ValueError as e:
         raise HTTPException(422, str(e))
+
+
+class ChatIn(BaseModel):
+    message: str
+    history: list = []
+    use_llm: bool = True
+
+
+@router.post("/{user_id}/chat")
+def chat(user_id: int, body: ChatIn, db: Session = Depends(get_db)):
+    """자연어 질문 → 도구 호출 → 계산 결과로 답변. 숫자는 코드가 계산한 값만 쓴다."""
+    from app.agent import chat_agent
+    try:
+        return chat_agent.chat(db, user_id, body.message, body.history, use_llm=body.use_llm)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+
+
+@router.get("/chat/examples")
+def chat_examples():
+    from app.agent import chat_agent
+    return chat_agent.EXAMPLES

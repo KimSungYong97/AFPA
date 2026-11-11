@@ -96,13 +96,16 @@ def build_context(db: Session, user_id: int, exclude_adopted: bool = True) -> Pl
     base = simulate(path_input)
 
     one_off = {(m.category, m.month) for m in db.query(OneOffMark).filter_by(user_id=user_id)}
+    from app.services import feedback_service
+    learned_ = feedback_service.learned(db, user_id)         # 거절 학습: 다시 제안하지 않을 후보, 줄여서 낼 카테고리
     cc = CandidateContext(
         path_input=path_input, monthly_income=snap.monthly_income_net,
         category_monthly={c: dict(v) for c, v in cat_monthly.items()},
         window=window, subscriptions=subs,
         outliers=details.get("spending", {}).get("outliers", []),
         emergency=details.get("emergency_fund", {}),
-        exclude_keys=adopted_keys(db, user_id) if exclude_adopted else set(),
+        exclude_keys=(adopted_keys(db, user_id) | learned_["exclude"]) if exclude_adopted else set(),
+        facts=_user_facts(inp, snap), prefs={"cut_scale": learned_["cut_scale"]},
     )
     return PlannerContext(
         user_id=user_id, as_of=snap.as_of, window=window, snapshot=snap, details=details, budget=budget,
@@ -114,6 +117,17 @@ def build_context(db: Session, user_id: int, exclude_adopted: bool = True) -> Pl
 # ===========================================================================
 # 경로 / 시나리오
 # ===========================================================================
+def _user_facts(inp, snap) -> dict:
+    """규칙 판정기(3차 규제·제도 엔진)가 쓰는 사용자 사실. 값을 모르면 None."""
+    ob = inp.onboarding
+    age = None
+    if ob.birth_date:
+        age = inp.as_of.year - ob.birth_date.year - ((inp.as_of.month, inp.as_of.day) < (ob.birth_date.month, ob.birth_date.day))
+    return {"age": age, "employment_status": ob.employment_status, "housing_type": ob.housing_type,
+            "risk_tolerance": ob.risk_tolerance, "monthly_income": snap.monthly_income_net, "net_worth": snap.net_worth,
+            "monthly_budget": snap.net_cash_flow}
+
+
 def _goal_path_dict(g) -> dict:
     return {
         "name": g.name, "priority": g.priority, "target_amount": g.target_amount,
@@ -178,10 +192,11 @@ def scenarios_view(db: Session, user_id: int, specs: List[dict]) -> dict:
 # ===========================================================================
 def ranked_candidates(db: Session, user_id: int) -> dict:
     ctx = build_context(db, user_id)
-    cands = cand_engine.generate(ctx.cand_ctx)
+    rep_ = cand_engine.generate_report(ctx.cand_ctx)
+    cands = rep_["candidates"]
     return {"as_of": ctx.as_of.isoformat(), "monthly_budget": round(ctx.budget),
             "headline_goal": cands[0]["effect"]["headline_goal"] if cands else None,
-            "candidates": cands}
+            "candidates": cands, "excluded": rep_["excluded"]}
 
 
 def combined_effect(db: Session, user_id: int, selected: List[str]) -> dict:
@@ -307,7 +322,7 @@ def plan_dict(db: Session, user_id: int) -> dict:
 
 
 def respond_item(db: Session, user_id: int, item_id: int, action: str, reason: Optional[str] = None,
-                 today: Optional[date] = None) -> dict:
+                 today: Optional[date] = None, reason_code: Optional[str] = None) -> dict:
     today = today or date.today()
     it = db.get(ActionItem, item_id)
     if it is None or it.user_id != user_id:
@@ -325,6 +340,8 @@ def respond_item(db: Session, user_id: int, item_id: int, action: str, reason: O
         if it.status not in ("PROPOSED", "ACCEPTED"):
             raise ValueError(f"거절할 수 없는 상태입니다({it.status}).")
         it.status, it.reject_reason = "REJECTED", (reason or "사유 없음")[:200]
+        from app.services import feedback_service           # 거절 이유를 다음 제안에 반영한다(거절 학습)
+        feedback_service.record_rejection(db, user_id, it.item_key, bool(it.mandatory), reason_code, reason or "", today)
     elif action == "done":
         if it.status not in ("ACCEPTED", "PROPOSED"):
             raise ValueError(f"완료로 바꿀 수 없는 상태입니다({it.status}).")
@@ -646,3 +663,15 @@ def after_sync(db: Session, user_id: int, today: Optional[date] = None) -> dict:
     pending = propose_replan(db, user_id, today)
     return {"monitoring_events": len(mon["events"]), "tracked_changes": len(tracked),
             "replan_proposed": pending is not None}
+
+
+# ===========================================================================
+# 월중 현금 전망
+# ===========================================================================
+def cash_forecast(db: Session, user_id: int) -> dict:
+    """이번 달 소비 속도로 월말까지 가면 어떻게 되는지(코드 계산). 현금은 비상금 인정 현금성 자산(입출금·CMA)."""
+    from app.planner import forecast as fc
+    inp = pipeline_service.load_engine_input(db, user_id)
+    snap = pipeline_service.latest_snapshot(db, user_id)
+    liquid = sum(h.amount for h in inp.holdings if h.side == "asset" and h.emergency_eligible)
+    return fc.forecast(inp.as_of, inp.flows, liquid, snap.monthly_income_net if snap else None)

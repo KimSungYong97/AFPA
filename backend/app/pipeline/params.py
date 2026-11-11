@@ -88,3 +88,15 @@ A_NETWORTH_CHANGE_RATIO = 0.05              # 순자산 ±5%
 A_SCORE_CHANGE_POINTS = 5                   # 재무 건강 점수 ±5점
 A_RATIO_CHANGE_POINTS = 5                    # DSR·비상금 충족률 ±5%p (스냅샷 값이 % 단위)
 A_MAX_TOOL_ROUNDS = 6                       # 에이전트가 도구를 호출할 수 있는 최대 라운드
+
+# F-: 월중 현금 전망 (이번 달 말까지의 소비·현금 예측)
+F_OVERSPEND_RATIO = 0.15                    # 이번 달 변동지출 예상이 평소(최근 완결 월 평균)보다 15% 이상 많으면 '주의'
+F_LOW_CASH_FIXED_RATIO = 0.5                # 월중 최저 현금이 월 고정지출의 50% 미만이면 '주의'
+F_TOP_CATEGORIES = 3                        # 초과 예상 카테고리 표시 수
+
+# L-: 거절 학습 — 거절 사유별로 같은 제안을 다시 하지 않는 기간과 금액 조정
+G_REJECT_LONG_DAYS = 365                    # '이미 하고 있어요'·'꼭 필요한 지출이에요': 사실상 다시 제안하지 않음
+G_REJECT_MID_DAYS = 90                      # '그냥 하기 싫어요'
+G_REJECT_SHORT_DAYS = 30                    # '금액이 부담돼요'·'나중에 할게요'
+G_BURDEN_SCALE = 0.5                        # '금액이 부담돼요'를 고르면 같은 카테고리 절감 제안 규모를 절반으로
+G_MIN_CUT_SCALE = 0.25                      # 반복해서 부담스럽다고 해도 규모는 원래의 25%까지만 줄인다

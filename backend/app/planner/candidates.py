@@ -1,17 +1,19 @@
-"""행동 후보 순위 엔진 (2차: 새는 돈 줄이기 + 보유 자산 간 조정)
+"""행동 후보 순위 엔진
 
 모든 후보를 "목표 달성 단축 기간"이라는 하나의 기준으로 환산해 효과 큰 순서로 정렬한다.
-- 단독 효과: 후보 하나를 기준 경로에 적용한 결과(후보끼리 단순 합산하지 않는다)
+- 후보는 **공급자(provider)** 가 올린다(registry). 2차는 소비 절감·구독 정리·자산 조정이고, 3차 이후 예·적금·대출·투자 모듈이 같은 방식으로 꽂힌다.
+- 후보를 올리기 전에 **규칙 판정기(rule checker)** 가 "이 사용자가 실제로 할 수 있는가"를 거른다(3차 규제·제도 엔진). 걸러진 후보와 이유는 따로 돌려준다.
+- 단독 효과: 후보 하나의 `change`를 기준 경로에 적용한 결과(후보끼리 단순 합산하지 않는다)
 - 충돌 표시: 같은 conflict_group(예: 같은 카테고리의 두 절감안)은 함께 하기 어렵다고 표시
-- 조합 효과: 여러 후보를 고르면 조합 전체를 경로에 다시 적용해 계산한다(combine)
-- 선처리: 비상금 충당률이 100% 미만이면(R-01) 비상금 우선 적립을 최우선·필수로 두고 투자 후보는 내지 않는다
+- 조합 효과: 여러 후보의 change를 합쳐 경로를 다시 계산한다(combine)
+- 필수 선처리: 비상금 충당률이 100% 미만이면(R-01) 비상금 우선 적립을 최우선·필수로 두고 투자 후보는 내지 않는다
 순위와 효과는 모두 코드가 계산하며, LLM은 순위의 이유를 설명할 뿐이다.
 """
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
-from app.pipeline import params
-from app.planner.path import PathInput, PathResult, compare, simulate, with_budget
+from app.planner import registry
+from app.planner.path import PathInput, PathResult, apply_change, compare, merge_changes, simulate
 
 
 @dataclass
@@ -24,111 +26,65 @@ class CandidateContext:
     outliers: List[dict] = field(default_factory=list)        # 엔진의 이상 지출 [{category, recent, baseline}]
     emergency: dict = field(default_factory=dict)             # 비상금 엔진 결과
     exclude_keys: set = field(default_factory=set)            # 이미 수락·완료된 후보
+    facts: dict = field(default_factory=dict)                 # 규칙 판정에 쓰는 사용자 사실(나이·고용·소득·거주 형태 등)
+    prefs: dict = field(default_factory=dict)                 # 거절 학습 결과: {"cut_scale": {카테고리: 배율}}
+
+
+def make_candidate(key: str, action_type: str, title: str, description: str, monthly_saving: float,
+                   params_: dict, evidence: dict, group: str, mandatory: bool = False,
+                   change: Optional[dict] = None, provider: str = "") -> dict:
+    """공급자가 후보를 만드는 표준 형식.
+
+    key            후보 식별자(안정적이어야 한다: 수락·거절 이력이 이 키에 붙는다)
+    monthly_saving 사용자에게 보여 줄 월 절감·이득 금액(참고용, 효과 계산은 change로 한다)
+    params_/evidence 후보 유형별 세부 값, 근거 수치(화면·추적에 쓴다)
+    group          같은 group의 후보는 서로 충돌한다(함께 하기 어렵다)
+    change         경로를 바꾸는 방식. 생략하면 {"monthly_delta": monthly_saving}
+    """
+    return {
+        "key": key, "action_type": action_type, "title": title, "description": description,
+        "monthly_saving": float(monthly_saving), "params": params_, "evidence": evidence,
+        "conflict_group": group, "conflicts_with": [], "mandatory": mandatory, "effect": None,
+        "change": change if change is not None else {"monthly_delta": float(monthly_saving)},
+        "provider": provider,
+    }
 
 
 # ---------------------------------------------------------------------------
 # 후보 생성
 # ---------------------------------------------------------------------------
+def generate_report(ctx: CandidateContext) -> dict:
+    """{"candidates": [...순위순, 필수 먼저], "excluded": [{key, title, rule_id, reason}]}"""
+    raw: List[dict] = []
+    for p in registry.providers():
+        raw += p.generate(ctx)
+    raw = [c for c in raw if c["key"] not in ctx.exclude_keys]
+
+    eligible, excluded = [], []
+    for c in raw:
+        verdict = _check_rules(c, ctx.facts)
+        if verdict is None:
+            eligible.append(c)
+        else:
+            excluded.append({"key": c["key"], "title": c["title"], "rule_id": verdict.rule_id, "reason": verdict.reason})
+
+    mandatory = [c for c in eligible if c["mandatory"]]
+    optional = [c for c in eligible if not c["mandatory"]]
+    _apply_effects(ctx, mandatory + optional)
+    ranked = _rank(_mark_conflicts(optional))
+    return {"candidates": mandatory + ranked, "excluded": excluded}
+
+
 def generate(ctx: CandidateContext) -> List[dict]:
-    cands: List[dict] = []
-    income = ctx.monthly_income or 0
-    min_saving = max(params.G_MIN_SAVING_ABS, income * params.G_MIN_SAVING_INCOME_SHARE)
-
-    # 1) 카테고리 절감 — 비필수 카테고리는 평균의 15%, 이상 지출은 직전 평균 수준으로 복구
-    outlier_by_cat = {o["category"]: o for o in ctx.outliers}
-    for cat, by_month in ctx.category_monthly.items():
-        if cat == "미분류":                      # 분류가 확정되지 않은 지출은 절감 후보로 삼지 않는다(분류 확인이 먼저)
-            continue
-        vals = [by_month.get(m, 0.0) for m in ctx.window]
-        avg = sum(vals) / len(vals) if vals else 0.0
-        if cat in params.G_NONESSENTIAL and avg > 0:
-            saving = round(avg * params.G_CUT_RATE_NONESSENTIAL, -2)
-            if saving >= min_saving:
-                cands.append(_cand(
-                    f"cut:{cat}", "소비 절감", f"{cat} 지출 {int(params.G_CUT_RATE_NONESSENTIAL * 100)}% 줄이기",
-                    f"{cat} 월 평균 {avg:,.0f}원 중 {saving:,.0f}원을 줄입니다.", saving,
-                    {"kind": "category_cut", "category": cat, "baseline_avg": round(avg),
-                     "cut_rate": params.G_CUT_RATE_NONESSENTIAL},
-                    {"월 평균 지출": round(avg), "관측 개월": len(vals)}, f"cat:{cat}"))
-        o = outlier_by_cat.get(cat)
-        if o:
-            saving = round(o["recent"] - o["baseline"], -2)
-            if saving >= min_saving:
-                cands.append(_cand(
-                    f"restore:{cat}", "소비 절감", f"{cat} 급증분 되돌리기",
-                    f"{cat}이 직전 3개월 평균 {o['baseline']:,.0f}원에서 {o['recent']:,.0f}원으로 늘었습니다. "
-                    f"평균 수준으로 되돌리면 월 {saving:,.0f}원을 아낍니다.", saving,
-                    {"kind": "category_cut", "category": cat, "baseline_avg": round(o["baseline"]),
-                     "restore": True},
-                    {"최근 월": round(o["recent"]), "직전 3개월 평균": round(o["baseline"]),
-                     "증가율(%)": o.get("growth_pct")}, f"cat:{cat}"))
-
-    # 2) 구독 정리 — 미사용 여부는 데이터로 알 수 없으므로 사용자 확인이 필요하다
-    for sub in ctx.subscriptions:
-        amt = round(sub["monthly_amount"], -2)
-        if amt >= params.G_MIN_SAVING_ABS:
-            cands.append(_cand(
-                f"sub:{sub['merchant']}", "구독 정리", f"구독 '{sub['merchant']}' 점검",
-                f"매월 {amt:,.0f}원이 나가는 정기결제입니다. 쓰지 않는다면 해지해 보세요(사용 여부는 직접 확인 필요).",
-                amt, {"kind": "subscription", "merchant": sub["merchant"], "monthly_amount": amt},
-                {"월 결제액": amt}, f"sub:{sub['merchant']}"))
-
-    # 3) 보유 자산 간 조정 (R-01): 비상금 우선 / 과다 현금 이동
-    em = ctx.emergency or {}
-    coverage = em.get("coverage_ratio")
-    mandatory: List[dict] = []
-    budget = ctx.path_input.monthly_budget
-    if budget < 0:
-        mandatory.append(_cand(
-            "deficit", "저축 금액 조정", "월 적자부터 해소하기",
-            f"매달 {-budget:,.0f}원 적자입니다. 저축·목표 배분보다 먼저 아래 절감안으로 적자를 메워야 합니다.",
-            0.0, {"kind": "deficit_first", "deficit": round(-budget)},
-            {"월 적자": round(-budget)}, "budget", mandatory=True))
-    if coverage is not None and coverage < 100 and em.get("required") and budget > 0:
-        import math
-        shortage = em["required"] - em.get("liquid_cash", 0)
-        monthly = round(min(shortage / params.G_EMERGENCY_FILL_MONTHS, budget), -2)
-        monthly = max(monthly, 1_000)
-        months = min(math.ceil(shortage / monthly), 60)
-        mandatory.append(_cand(
-            "emergency", "비상금 우선 적립", "비상금 먼저 채우기",
-            f"비상금이 {shortage:,.0f}원 부족합니다(충당률 {coverage:.1f}%). 투자·장기 적립보다 먼저, "
-            f"월 {monthly:,.0f}원씩 {months}개월 동안 입출금·CMA에 모아 두세요.",
-            -monthly, {"kind": "emergency_first", "shortage": round(shortage), "monthly": monthly,
-                       "months": months},
-            {"충당률(%)": coverage, "필요 비상금": em["required"], "보유 현금성": em.get("liquid_cash", 0)},
-            "budget", mandatory=True))
-    elif coverage is not None and coverage >= 100:
-        excess = em.get("liquid_cash", 0) - em.get("required", 0) - em.get("monthly_essential_expense", 0)
-        if excess >= params.G_CASH_EXCESS_MIN:
-            gain = round(excess * (params.G_DEPOSIT_RATE - params.G_CHECKING_RATE) / 12, -2)
-            if gain > 0:
-                cands.append(_cand(
-                    "cash_move", "자산 비중 조정", "남는 현금을 저축성 자산으로 옮기기",
-                    f"비상금과 한 달 생활비를 뺀 현금 {excess:,.0f}원이 입출금에 있습니다. "
-                    f"저축성 자산으로 옮기면 월 약 {gain:,.0f}원의 이자를 더 받습니다(금리 가정 기준).",
-                    gain, {"kind": "cash_move", "excess": round(excess)},
-                    {"이동 대상 금액": round(excess), "금리 가정": f"{params.G_CHECKING_RATE:.1%} → {params.G_DEPOSIT_RATE:.1%}"},
-                    "cash"))
-
-    cands = [c for c in cands if c["key"] not in ctx.exclude_keys]
-    cands = _apply_effects(ctx, cands)
-    cands = _mark_conflicts(cands)
-    ranked = _rank(cands)
-    for c in mandatory:
-        if c["key"] in ctx.exclude_keys:
-            continue
-        _apply_effects(ctx, [c])
-    return [c for c in mandatory if c["key"] not in ctx.exclude_keys] + ranked
+    return generate_report(ctx)["candidates"]
 
 
-def _cand(key, action_type, title, description, monthly_saving, params_, evidence, group,
-          mandatory: bool = False) -> dict:
-    return {
-        "key": key, "action_type": action_type, "title": title, "description": description,
-        "monthly_saving": float(monthly_saving), "params": params_, "evidence": evidence,
-        "conflict_group": group, "conflicts_with": [], "mandatory": mandatory, "effect": None,
-    }
+def _check_rules(cand: dict, facts: dict):
+    for checker in registry.checkers():
+        v = checker.check(cand, facts)
+        if not v.ok:
+            return v
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -146,8 +102,7 @@ def _apply_effects(ctx: CandidateContext, cands: List[dict]) -> List[dict]:
     base = simulate(base_in)
     head = _headline_goal(base)
     for c in cands:
-        inp = _candidate_input(base_in, c)
-        res = simulate(inp)
+        res = simulate(apply_change(base_in, c["change"]))
         per_goal = compare(base, res)
         h = next((p for p in per_goal if p["goal"] == head), None)
         c["effect"] = {
@@ -164,16 +119,6 @@ def _apply_effects(ctx: CandidateContext, cands: List[dict]) -> List[dict]:
                          for p in per_goal],
         }
     return cands
-
-
-def _candidate_input(base_in: PathInput, c: dict) -> PathInput:
-    if c["params"].get("kind") == "emergency_first":
-        inp = with_budget(base_in, 0)
-        inp.one_offs = dict(inp.one_offs)
-        for k in range(1, c["params"]["months"] + 1):
-            inp.one_offs[k] = inp.one_offs.get(k, 0.0) + c["params"]["monthly"]
-        return inp
-    return with_budget(base_in, c["monthly_saving"])
 
 
 def _deficit_closed(budget: float, saving: float) -> Optional[float]:
@@ -234,14 +179,7 @@ def combine(ctx: CandidateContext, candidates: List[dict], selected: List[str]) 
             used_groups[g] = c
 
     base = simulate(ctx.path_input)
-    inp = with_budget(ctx.path_input, sum(c["monthly_saving"] for c in chosen
-                                          if c["params"].get("kind") != "emergency_first"))
-    inp.one_offs = dict(inp.one_offs)
-    for c in chosen:
-        if c["params"].get("kind") == "emergency_first":
-            for k in range(1, c["params"]["months"] + 1):
-                inp.one_offs[k] = inp.one_offs.get(k, 0.0) + c["params"]["monthly"]
-    res = simulate(inp)
+    res = simulate(apply_change(ctx.path_input, merge_changes([c["change"] for c in chosen])))
     per_goal = compare(base, res)
     head = _headline_goal(base)
     sum_individual = sum((c["effect"]["months_saved"] or 0) for c in chosen if c["effect"])

@@ -207,9 +207,59 @@ def _watcher() -> None:
                 st.markdown(f"- {h['created_at'].replace('T', ' ')} · **{label}** · {h.get('headline', '')}")
 
 
+def _chat() -> None:
+    st.subheader("💬 물어보기")
+    st.write("궁금한 걸 말로 물어보세요. AI가 질문을 이해해 **계산 도구를 직접 골라 쓰고**, 계산된 숫자로만 답해요. "
+             "(계산은 코드가 하고, AI는 질문을 읽고 풀어서 설명해요)")
+    key = f"chat_{uid()}"
+    hist = st.session_state.setdefault(key, [])
+    ok, examples = get_ok("/api/agent/chat/examples")
+    if not hist and ok:
+        st.caption("이렇게 물어볼 수 있어요")
+        cols = st.columns(2)
+        for i, ex in enumerate(examples):
+            if cols[i % 2].button(ex, key=f"ex_{i}"):
+                st.session_state["chat_pending"] = ex
+                st.rerun()
+
+    for m in hist:
+        with st.chat_message(m["role"]):
+            st.markdown(m["content"])
+            if m["role"] == "assistant" and m.get("calls"):
+                with st.expander("AI가 이렇게 계산했어요"):
+                    for c in m["calls"]:
+                        arg = ", ".join(f"{k}={v}" for k, v in c["args"].items())
+                        st.markdown(f"🔧 **{c['label']}**" + (f" ({arg})" if arg else ""))
+                    st.caption("숫자는 모두 코드가 계산한 값이에요.")
+            if m["role"] == "assistant" and m.get("note"):
+                st.caption(m["note"])
+
+    question = st.chat_input("예) 월 30만 원 더 저축하면 목표가 얼마나 빨라져요?") or st.session_state.pop("chat_pending", None)
+    if question:
+        with st.chat_message("user"):
+            st.markdown(question)
+        with st.chat_message("assistant"):
+            with st.spinner("계산 중이에요..."):
+                status, res = call("POST", f"/api/agent/{uid()}/chat", json={
+                    "message": question, "history": [{"role": h["role"], "content": h["content"]} for h in hist]})
+            if status != 200:
+                st.error(error_text(res))
+                return
+            st.markdown(res["answer"])
+        note = res["error"] if res.get("error") else ("" if res["source"] == "llm" else "AI 답변 대신 계산 결과를 그대로 보여 드렸어요.")
+        hist.append({"role": "user", "content": question})
+        hist.append({"role": "assistant", "content": res["answer"], "calls": res.get("calls", []), "note": note})
+        st.rerun()
+    if hist and st.button("대화 지우기"):
+        st.session_state[key] = []
+        st.rerun()
+
+
 def render() -> None:
     st.title("🤖 AI 에이전트")
-    t1, t2 = st.tabs(["변화 감시 에이전트", "AI 플래너 (시험판)"])
+    t0, t1, t2 = st.tabs(["💬 물어보기", "👀 변화 감시", "🧪 AI 플래너 (시험판)"])
+    with t0:
+        _chat()
     with t1:
         _watcher()
     with t2:

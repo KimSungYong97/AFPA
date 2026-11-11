@@ -4,7 +4,8 @@
     1차 배분: 기한이 있는 목표에 "남은 금액 / 남은 개월 수"(필요 월 저축액)를 우선순위 순으로 채운다.
     2차 배분: 남는 돈은 우선순위가 높은 미완료 목표부터 채워 달성을 앞당긴다.
     목표가 끝나면 그 몫이 다음 목표로 이어진다.
-- 적립 모델: 월 납입 누적 + 단순 수익률 가정(월복리, 보수적 기본값).
+- 적립 모델: 월 납입 누적 + 수익률 가정(월복리, 보수적 기본값). 목표(계좌)마다 연 수익률·세율을 따로 둘 수 있다
+  (지정하지 않으면 기본 수익률). 예: 전세 자금은 3.5% 적금, 여행 자금은 입출금 0.1% — 3차 예·적금 모듈이 이 값을 바꾼다.
 - 월 여유 자금이 음수인 달은 우선순위가 낮은 목표의 적립금부터 인출해 메운다.
 """
 from copy import deepcopy
@@ -25,6 +26,8 @@ class PathGoal:
     current_amount: float = 0.0
     target_date: Optional[date] = None
     priority: int = 1
+    annual_return: Optional[float] = None       # 이 목표의 적립금이 굴러가는 연 수익률 (None = PathInput.annual_return)
+    tax_rate: float = 0.0                       # 이자·수익에 붙는 세율 (예: 이자소득세 0.154). 기본은 세전
 
 
 @dataclass
@@ -36,6 +39,7 @@ class PathInput:
     initial_net_worth: float = 0.0
     one_offs: Dict[int, float] = field(default_factory=dict)   # {몇 개월 뒤: 추가 지출액}
     horizon_months: int = params.PATH_HORIZON_MONTHS
+    free_return: Optional[float] = None         # 목표에 배분되지 않은 자유 저축의 연 수익률 (None = annual_return)
 
 
 @dataclass
@@ -84,10 +88,17 @@ def months_between(a: date, b: date) -> int:
 # ---------------------------------------------------------------------------
 # 시뮬레이션
 # ---------------------------------------------------------------------------
+def monthly_rate(annual_return: float, tax_rate: float = 0.0) -> float:
+    """연 수익률(세전)과 세율로 월 실효 수익률을 구한다. 세금은 수익에만 붙는다."""
+    return (1 + annual_return * (1 - tax_rate)) ** (1 / 12) - 1
+
+
 def simulate(inp: PathInput, series_months: int = params.SERIES_MONTHS) -> PathResult:
-    r_m = (1 + inp.annual_return) ** (1 / 12) - 1
     goals = sorted(inp.goals, key=lambda g: g.priority)
     n = len(goals)
+    r_goal = [monthly_rate(g.annual_return if g.annual_return is not None else inp.annual_return, g.tax_rate)
+              for g in goals]
+    r_free = monthly_rate(inp.free_return if inp.free_return is not None else inp.annual_return)
 
     bal = [g.current_amount for g in goals]
     done_k: List[Optional[int]] = [0 if g.current_amount >= g.target_amount else None for g in goals]
@@ -113,8 +124,8 @@ def simulate(inp: PathInput, series_months: int = params.SERIES_MONTHS) -> PathR
         # 1) 수익률 반영 (미완료 목표만)
         for i in range(n):
             if done_k[i] is None and bal[i] > 0:
-                bal[i] *= (1 + r_m)
-        free *= (1 + r_m)
+                bal[i] *= (1 + r_goal[i])
+        free *= (1 + r_free)
 
         # 2) 이번 달 가용 금액
         budget = inp.monthly_budget - inp.one_offs.get(k, 0.0)
@@ -240,4 +251,33 @@ def net_worth_at(result: PathResult, k: int) -> Optional[float]:
 def with_budget(inp: PathInput, delta: float) -> PathInput:
     c = deepcopy(inp)
     c.monthly_budget += delta
+    return c
+
+
+# ---------------------------------------------------------------------------
+# 후보·시나리오가 경로를 바꾸는 방식(change)을 데이터로 적용
+# ---------------------------------------------------------------------------
+def merge_changes(changes: List[dict]) -> dict:
+    """여러 후보의 change를 하나로 합친다(월 배분액·일회성 지출은 더하고, 목표별 수익률은 뒤의 것이 우선)."""
+    out: dict = {"monthly_delta": 0.0, "one_offs": {}, "goal_returns": {}}
+    for ch in changes:
+        out["monthly_delta"] += ch.get("monthly_delta", 0.0)
+        for k, v in (ch.get("one_offs") or {}).items():
+            out["one_offs"][int(k)] = out["one_offs"].get(int(k), 0.0) + v
+        out["goal_returns"].update(ch.get("goal_returns") or {})
+    return out
+
+
+def apply_change(inp: PathInput, change: dict) -> PathInput:
+    """change = {monthly_delta, one_offs, goal_returns} 를 적용한 새 입력을 돌려준다."""
+    c = deepcopy(inp)
+    c.monthly_budget += change.get("monthly_delta", 0.0)
+    c.one_offs = dict(c.one_offs)
+    for k, v in (change.get("one_offs") or {}).items():
+        c.one_offs[int(k)] = c.one_offs.get(int(k), 0.0) + v
+    for name, spec in (change.get("goal_returns") or {}).items():
+        for g in c.goals:
+            if g.name == name:
+                g.annual_return = spec.get("annual_return", g.annual_return)
+                g.tax_rate = spec.get("tax_rate", g.tax_rate)
     return c

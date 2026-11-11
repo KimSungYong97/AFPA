@@ -34,6 +34,7 @@ class CombineIn(BaseModel):
 class RespondIn(BaseModel):
     action: str = Field(pattern="^(accept|reject|done)$")
     reason: Optional[str] = None
+    reason_code: Optional[str] = Field(default=None, pattern="^(already|needed|burden|later|other)$")
 
 
 class DecideIn(BaseModel):
@@ -99,7 +100,7 @@ def generate_plan(user_id: int, db: Session = Depends(get_db)):
 @router.post("/{user_id}/items/{item_id}")
 def respond(user_id: int, item_id: int, body: RespondIn, db: Session = Depends(get_db)):
     """제안 항목에 응답: accept(수락) / reject(거절, 사유 저장) / done(직접 완료 체크)"""
-    return _wrap(ps.respond_item, db, user_id, item_id, body.action, body.reason)
+    return _wrap(ps.respond_item, db, user_id, item_id, body.action, body.reason, None, body.reason_code)
 
 
 @router.post("/{user_id}/track")
@@ -148,3 +149,32 @@ def read(user_id: int, notification_id: int, db: Session = Depends(get_db)):
     if not ps.mark_read(db, user_id, notification_id):
         raise HTTPException(status_code=404, detail="알림을 찾을 수 없습니다.")
     return {"read": True}
+
+
+@router.get("/{user_id}/forecast")
+def forecast(user_id: int, db: Session = Depends(get_db)):
+    """이번 달 월말 전망: 예상 지출·월중 최저 현금·월말 잔액·위험도"""
+    return _wrap(ps.cash_forecast, db, user_id)
+
+
+@router.get("/{user_id}/outcomes")
+def outcomes(user_id: int, db: Session = Depends(get_db)):
+    """사후 보고: 실천한 제안의 실제 결과와 그 덕분에 빨라진 목표 달성 시기"""
+    from app.services import feedback_service
+    return _wrap(feedback_service.outcome_report, db, user_id)
+
+
+@router.get("/{user_id}/preferences")
+def preferences(user_id: int, db: Session = Depends(get_db)):
+    """거절에서 배운 것: 다시 제안하지 않는 후보와 줄여서 제안하는 카테고리"""
+    from app.services import feedback_service
+    return feedback_service.list_preferences(db, user_id)
+
+
+@router.delete("/{user_id}/preferences/{pref_id}")
+def delete_preference(user_id: int, pref_id: int, db: Session = Depends(get_db)):
+    """거절 학습 결과를 지워 다시 제안받는다"""
+    from app.services import feedback_service
+    if not feedback_service.delete_preference(db, user_id, pref_id):
+        raise HTTPException(404, "항목을 찾을 수 없습니다.")
+    return {"deleted": pref_id}

@@ -16,6 +16,7 @@ KINDS = {
     "income_drop": "월 소득이 크게 줄어든 상황 (최근 3개월 수입이 40% 감소)",
     "new_fixed": "새 정기 지출이 생긴 상황 (매달 35만 원, 최근 4개월)",
     "spending_surge": "쇼핑 지출이 갑자기 늘어난 상황 (최근 2개월 매달 45만 원 추가)",
+    "month_spike": "이번 달 초에 쇼핑으로 120만 원을 썼어요 (월말 전망 경고용)",
 }
 
 
@@ -50,6 +51,11 @@ def simulate_change(db: Session, user_id: int, kind: str) -> dict:
             db.add(ClassifiedFlow(user_id=user_id, occurred_on=date(y, m, 15), amount=350_000, direction="out",
                                   source="bank", counterparty="신규 정기 납입", merchant_norm="", major_class="fixed",
                                   category="기타", stage=1, rule="demo", is_recurring=True))
+    elif kind == "month_spike":
+        for day in sorted({max(1, as_of.day - 4), max(1, as_of.day - 2), as_of.day}):
+            db.add(ClassifiedFlow(user_id=user_id, occurred_on=date(as_of.year, as_of.month, day), amount=400_000,
+                                  direction="out", source="card", counterparty="온라인 쇼핑몰", merchant_norm="",
+                                  major_class="variable", category="쇼핑", stage=1, rule="demo"))
     else:
         for y, m in _recent_months(as_of, 2):
             for day in (5, 12, 19):
