@@ -270,7 +270,7 @@
 
 ---
 
-## 8. 코드 구조
+## 5. 공통 원칙
 
 ```text
 AFPA/
@@ -360,10 +360,14 @@ frontend/                        # 사용자 화면 (Streamlit)
               financial_snapshots  (동기화마다 누적)  ──▶ 기존 FinancialProfile / Transaction (호환 브리지)
 ```
 
-### 실행 방법
+세부 설계는 `notion/금융아빠(AFPA)/`에 있다.
 
-```powershell
-cd D:\AFPA\backend
+| 문서 | 내용 |
+|------|------|
+| `AFPA 프로젝트 개요 및 전체 설계.md` | 전체 설계 총괄 |
+| `공통 설계/AFPA 로드맵 및 구현 순서.md` | 구현 순서·범위 기준 |
+| `공통 설계/` 나머지 | 규칙 엔진, 알림, 개인정보, LLM 원칙, 평가, 설계 파라미터 |
+| `작업 일정/프로젝트/` | 기능별 상세 설계 |
 
 # 0) (선택) .env — .env.example 을 복사해 LLM_BASE_URL / LLM_MODEL (vLLM 등 OpenAI 호환 서버) 또는
 #    OPENAI_API_KEY 를 지정하면 분류 3단계(LLM)와 프로토타입 Agent 활성화. 설정이 없으면 규칙 기반으로만 동작
